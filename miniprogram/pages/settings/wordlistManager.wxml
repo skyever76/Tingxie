@@ -1,0 +1,22 @@
+<view style="padding: 40rpx;">
+  <view style="display: flex; gap: 20rpx; margin-bottom: 20rpx;">
+    <button bindtap="addWordlist">新增词库</button>
+    <button bindtap="importWordlist">导入</button>
+    <button bindtap="exportWordlist">导出</button>
+  </view>
+  <view wx:if="{{loading}}" style="text-align: center; padding: 20rpx;">加载中...</view>
+  <block wx:else>
+    <view style="font-size: 28rpx; color: #666; margin-bottom: 10rpx;">词库数量: {{wordlists.length}}</view>
+    <block wx:if="{{wordlists.length > 0}}">
+      <block wx:for="{{wordlists}}" wx:key="_id">
+        <view style="margin: 20rpx 0; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+          <text style="flex:1;">{{item.name}}</text>
+          <button size="mini" data-id="{{item._id}}" bindtap="goToDetail">详情</button>
+          <button size="mini" data-id="{{item._id}}" bindtap="renameWordlist">重命名</button>
+          <button size="mini" data-id="{{item._id}}" bindtap="deleteWordlist">删除</button>
+        </view>
+      </block>
+    </block>
+    <view wx:else style="text-align: center; color: #999; padding: 20rpx;">暂无词库</view>
+  </block>
+</view> 

@@ -1,0 +1,21 @@
+<view>
+  <!-- 下级目录 -->
+  <block wx:if="{{subcategories.length > 0}}">
+    <view style="font-weight:bold;padding:20rpx 0;">下级目录：</view>
+    <block wx:for="{{subcategories}}" wx:key="_id">
+      <view bindtap="goToCategory" data-id="{{item._id}}" style="padding: 20rpx; border-bottom: 1px solid #eee; color:#07c160;">
+        {{item.name}}
+      </view>
+    </block>
+  </block>
+  <!-- 词表列表 -->
+  <block wx:if="{{lists.length > 0}}">
+    <view style="font-weight:bold;padding:20rpx 0;">词表/单元：</view>
+    <block wx:for="{{lists}}" wx:key="_id">
+      <view bindtap="goToDictation" data-id="{{item._id}}" style="padding: 20rpx; border-bottom: 1px solid #eee;">
+        {{item.title}}
+      </view>
+    </block>
+  </block>
+  <view wx:if="{{subcategories.length === 0 && lists.length === 0}}" style="padding:40rpx;text-align:center;color:#999;">暂无内容</view>
+</view> 

@@ -1,0 +1,74 @@
+<!--pages/detail/detail.wxml-->
+<view class="container">
+  <!-- 词库信息 -->
+  <view class="word-list-info" wx:if="{{wordList}}">
+    <view class="name">{{wordList.name}}</view>
+    <view class="desc">{{wordList.description || '暂无描述'}}</view>
+    <view class="meta">
+      <text class="category">{{wordList.mainCategory}} - {{wordList.subCategory}}</text>
+      <text class="count">{{wordList.totalWords}}个词语</text>
+    </view>
+  </view>
+
+  <!-- 工具栏 -->
+  <view class="toolbar">
+    <view class="search-bar">
+      <input 
+        class="search-input" 
+        placeholder="搜索词语" 
+        value="{{searchKeyword}}"
+        bindinput="onSearch"
+      />
+    </view>
+    <view class="actions">
+      <button 
+        class="action-btn {{showPinyin ? 'active' : ''}}" 
+        bindtap="togglePinyin"
+      >拼音</button>
+      <button 
+        class="action-btn" 
+        bindtap="{{isEditing ? 'exitEditMode' : 'enterEditMode'}}"
+      >{{isEditing ? '取消' : '编辑'}}</button>
+      <button 
+        class="action-btn primary" 
+        bindtap="startDictation"
+      >开始听写</button>
+    </view>
+  </view>
+
+  <!-- 词语列表 -->
+  <view class="word-list" wx:if="{{!isEditing}}">
+    <view 
+      class="word-item" 
+      wx:for="{{words}}" 
+      wx:key="text"
+    >
+      <view class="word-text">{{item.text}}</view>
+      <view class="word-pinyin" wx:if="{{showPinyin && item.pinyin}}">
+        {{item.pinyin}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑模式 -->
+  <view class="edit-mode" wx:if="{{isEditing}}">
+    <textarea 
+      class="edit-textarea" 
+      placeholder="每行一个词语，格式：词语 [拼音]&#10;例如：&#10;苹果 píng guǒ&#10;香蕉 xiāng jiāo" 
+      value="{{editWords}}"
+      bindinput="onWordsInput"
+    />
+    <button 
+      class="save-btn" 
+      bindtap="saveEdit"
+    >保存</button>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+  <view class="empty" wx:if="{{!loading && words.length === 0}}">
+    <text>暂无词语</text>
+  </view>
+</view> 

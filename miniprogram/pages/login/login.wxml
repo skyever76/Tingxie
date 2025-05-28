@@ -1,0 +1,13 @@
+<view class="container">
+  <view class="header">
+    <text class="title">欢迎使用亚当听写</text>
+    <text class="subtitle">请授权登录以使用完整功能</text>
+  </view>
+
+  <view class="content">
+    <button 
+      class="login-btn" 
+      bindtap="handleGetUserProfile"
+    >微信登录</button>
+  </view>
+</view> 

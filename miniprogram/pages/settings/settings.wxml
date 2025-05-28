@@ -1,0 +1,4 @@
+<view style="padding: 40rpx;">
+  <button bindtap="goToWordlistManager">词库管理</button>
+  <button bindtap="goToDictationSettings">听写设置</button>
+</view> 

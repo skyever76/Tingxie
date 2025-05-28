@@ -1,0 +1,94 @@
+<!-- 听写设置页面 -->
+<view class="container">
+  <view class="settings-group">
+    <view class="settings-title">基本设置</view>
+    
+    <!-- 随机播放 -->
+    <view class="settings-item">
+      <text class="settings-label">随机播放</text>
+      <switch checked="{{settings.randomPlay}}" bindchange="handleRandomPlayChange" color="#07c160" />
+    </view>
+
+    <!-- 显示拼音 -->
+    <view class="settings-item">
+      <text class="settings-label">显示拼音</text>
+      <switch checked="{{settings.showPinyin}}" bindchange="handleShowPinyinChange" color="#07c160" />
+    </view>
+
+    <!-- 自动下一个 -->
+    <view class="settings-item">
+      <text class="settings-label">自动下一个</text>
+      <switch checked="{{settings.autoNext}}" bindchange="handleAutoNextChange" color="#07c160" />
+    </view>
+  </view>
+
+  <view class="settings-group">
+    <view class="settings-title">播放设置</view>
+    
+    <!-- 播放速度 -->
+    <view class="settings-item">
+      <text class="settings-label">播放速度</text>
+      <slider 
+        min="0.5" 
+        max="2" 
+        step="0.1" 
+        value="{{settings.playSpeed}}" 
+        bindchange="handlePlaySpeedChange"
+        activeColor="#07c160"
+        block-size="24"
+      />
+      <text class="settings-value">{{settings.playSpeed}}x</text>
+    </view>
+
+    <!-- 重复次数 -->
+    <view class="settings-item">
+      <text class="settings-label">重复次数</text>
+      <slider 
+        min="1" 
+        max="5" 
+        step="1" 
+        value="{{settings.repeatTimes}}" 
+        bindchange="handleRepeatTimesChange"
+        activeColor="#07c160"
+        block-size="24"
+      />
+      <text class="settings-value">{{settings.repeatTimes}}次</text>
+    </view>
+
+    <!-- 间隔时间 -->
+    <view class="settings-item">
+      <text class="settings-label">间隔时间</text>
+      <slider 
+        min="1" 
+        max="10" 
+        step="1" 
+        value="{{settings.intervalTime}}" 
+        bindchange="handleIntervalTimeChange"
+        activeColor="#07c160"
+        block-size="24"
+      />
+      <text class="settings-value">{{settings.intervalTime}}秒</text>
+    </view>
+  </view>
+
+  <view class="settings-group">
+    <view class="settings-title">其他设置</view>
+    
+    <!-- 振动反馈 -->
+    <view class="settings-item">
+      <text class="settings-label">振动反馈</text>
+      <switch checked="{{settings.vibration}}" bindchange="handleVibrationChange" color="#07c160" />
+    </view>
+
+    <!-- 声音反馈 -->
+    <view class="settings-item">
+      <text class="settings-label">声音反馈</text>
+      <switch checked="{{settings.soundFeedback}}" bindchange="handleSoundFeedbackChange" color="#07c160" />
+    </view>
+  </view>
+
+  <!-- 重置按钮 -->
+  <view class="reset-button" bindtap="handleResetSettings">
+    <text>恢复默认设置</text>
+  </view>
+</view> 

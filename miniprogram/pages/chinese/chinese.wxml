@@ -1,0 +1,7 @@
+<view>
+  <block wx:for="{{categories}}" wx:key="id">
+    <view bindtap="goToCategory" data-id="{{item.id}}" style="padding: 20rpx; border-bottom: 1px solid #eee;">
+      {{item.name}}
+    </view>
+  </block>
+</view> 

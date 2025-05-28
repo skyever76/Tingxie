@@ -1,0 +1,69 @@
+<!--pages/create/create.wxml-->
+<view class="container">
+  <view class="form">
+    <view class="form-item">
+      <text class="label">词库名称</text>
+      <input 
+        class="input" 
+        placeholder="请输入词库名称" 
+        value="{{name}}"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">词库描述</text>
+      <input 
+        class="input" 
+        placeholder="请输入词库描述（选填）" 
+        value="{{description}}"
+        bindinput="onDescInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">主分类</text>
+      <picker 
+        mode="selector" 
+        range="{{mainCategories}}" 
+        value="{{mainCategories.indexOf(mainCategory)}}"
+        bindchange="onMainCategoryChange"
+      >
+        <view class="picker">
+          {{mainCategory}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">子分类</text>
+      <picker 
+        mode="selector" 
+        range="{{subCategories[mainCategory]}}" 
+        value="{{subCategories[mainCategory].indexOf(subCategory)}}"
+        bindchange="onSubCategoryChange"
+      >
+        <view class="picker">
+          {{subCategory}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">词语列表</text>
+      <text class="tip">每行一个词语，格式：词语 [拼音]</text>
+      <textarea 
+        class="textarea" 
+        placeholder="苹果 píng guǒ&#10;香蕉 xiāng jiāo" 
+        value="{{words}}"
+        bindinput="onWordsInput"
+      />
+    </view>
+
+    <button 
+      class="submit-btn" 
+      bindtap="createWordList"
+      loading="{{loading}}"
+    >创建词库</button>
+  </view>
+</view>

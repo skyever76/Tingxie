@@ -1,0 +1,29 @@
+<view style="padding: 40rpx;">
+  <view class="setting-item">
+    <text>播放速度</text>
+    <slider min="0.5" max="2" step="0.1" value="{{settings.playSpeed}}" bindchange="changeSpeed" />
+    <text>{{settings.playSpeed}}x</text>
+    <text style="font-size:24rpx;color:#888;">调整语音播放的快慢</text>
+  </view>
+  <view class="setting-item">
+    <text>重复次数</text>
+    <slider min="1" max="5" step="1" value="{{settings.repeatTimes}}" bindchange="changeRepeat" />
+    <text>{{settings.repeatTimes}}次</text>
+    <text style="font-size:24rpx;color:#888;">每个词语重复播放的次数</text>
+  </view>
+  <view class="setting-item">
+    <text>自动播放</text>
+    <switch checked="{{settings.autoNext}}" bindchange="toggleAutoNext" />
+    <text style="font-size:24rpx;color:#888;">每个词语播放后自动进入下一个</text>
+  </view>
+  <view class="setting-item">
+    <text>随机顺序</text>
+    <switch checked="{{settings.randomOrder}}" bindchange="toggleRandomOrder" />
+    <text style="font-size:24rpx;color:#888;">词语顺序随机打乱</text>
+  </view>
+  <view class="setting-item">
+    <text>显示拼音</text>
+    <switch checked="{{settings.showPinyin}}" bindchange="togglePinyin" />
+    <text style="font-size:24rpx;color:#888;">显示中文词语的拼音</text>
+  </view>
+</view> 

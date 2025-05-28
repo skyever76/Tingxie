@@ -1,0 +1,58 @@
+<!-- 学习进度统计页面 -->
+<view class="container">
+  <!-- 总体统计 -->
+  <view class="stats-card">
+    <view class="stats-title">总体统计</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <text class="stats-value">{{totalWords}}</text>
+        <text class="stats-label">总词数</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-value">{{completedWords}}</text>
+        <text class="stats-label">已完成</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-value">{{accuracy}}%</text>
+        <text class="stats-label">正确率</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-value">{{totalTime}}</text>
+        <text class="stats-label">总时长</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 进度图表 -->
+  <view class="stats-card">
+    <view class="stats-title">学习进度</view>
+    <view class="chart-container">
+      <canvas canvas-id="progressChart" class="progress-chart"></canvas>
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="stats-card">
+    <view class="stats-title">历史记录</view>
+    <view class="history-list">
+      <block wx:if="{{historyList.length > 0}}">
+        <view class="history-item" wx:for="{{historyList}}" wx:key="date">
+          <view class="history-date">{{item.date}}</view>
+          <view class="history-info">
+            <text class="history-words">完成词数：{{item.words}}</text>
+            <text class="history-accuracy">正确率：{{item.accuracy}}%</text>
+            <text class="history-time">用时：{{item.time}}</text>
+          </view>
+        </view>
+      </block>
+      <view wx:else class="empty-tip">
+        <text>暂无学习记录</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导出按钮 -->
+  <view class="export-button" bindtap="handleExport">
+    <text>导出学习记录</text>
+  </view>
+</view> 

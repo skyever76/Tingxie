@@ -1,0 +1,4 @@
+<view>
+  <text>Index Page Loaded</text>
+  <text>User Nickname: {{ userInfo.nickName }}</text>
+</view> 

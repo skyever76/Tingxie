@@ -1,0 +1,65 @@
+<view class="container">
+  <view class="header">
+    <text class="title">我的词库</text>
+    <button class="create-btn" bindtap="goToCreate">创建词库</button>
+  </view>
+
+  <!-- 分类切换 -->
+  <view class="category-tabs">
+    <view 
+      class="category-tab {{currentCategory === 'chinese' ? 'active' : ''}}" 
+      bindtap="switchCategory" 
+      data-category="chinese"
+    >中文词库</view>
+    <view 
+      class="category-tab {{currentCategory === 'english' ? 'active' : ''}}" 
+      bindtap="switchCategory" 
+      data-category="english"
+    >英文词库</view>
+  </view>
+
+  <!-- 年级/类别选择 -->
+  <view class="subcategory-list" wx:if="{{currentCategory === 'chinese'}}">
+    <view 
+      class="subcategory-item" 
+      wx:for="{{categories.chinese.grades}}" 
+      wx:key="*this"
+      bindtap="selectGrade"
+      data-grade="{{item}}"
+    >{{item}}</view>
+  </view>
+  <view class="subcategory-list" wx:if="{{currentCategory === 'english'}}">
+    <view 
+      class="subcategory-item" 
+      wx:for="{{categories.english.types}}" 
+      wx:key="*this"
+      bindtap="selectType"
+      data-type="{{item}}"
+    >{{item}}</view>
+  </view>
+
+  <view class="content">
+    <block wx:if="{{loading}}">
+      <view class="loading">加载中...</view>
+    </block>
+    <block wx:elif="{{wordLists.length === 0}}">
+      <view class="empty">
+        <text>还没有词库，点击上方按钮创建</text>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="word-list">
+        <view class="word-item" wx:for="{{wordLists}}" wx:key="_id">
+          <view class="word-info" bindtap="goToDictation" data-id="{{item._id}}">
+            <text class="word-name">{{item.name}}</text>
+            <text class="word-desc">{{item.description}}</text>
+            <text class="word-count">{{item.totalWords}}个单词</text>
+          </view>
+          <view class="word-actions">
+            <button class="delete-btn" bindtap="deleteWordList" data-id="{{item._id}}">删除</button>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view> 

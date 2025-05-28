@@ -1,0 +1,83 @@
+<!-- 批量导入导出工具页面 -->
+<view class="container">
+  <!-- 导入部分 -->
+  <view class="tool-section">
+    <view class="section-title">批量导入</view>
+    <view class="section-content">
+      <view class="format-tips">
+        <text class="tips-title">支持以下格式：</text>
+        <text class="tips-item">1. 每行一个单词</text>
+        <text class="tips-item">2. 逗号分隔</text>
+        <text class="tips-item">3. 制表符分隔</text>
+        <text class="tips-item">4. JSON格式</text>
+      </view>
+      
+      <textarea 
+        class="input-area" 
+        placeholder="请输入要导入的内容" 
+        model:value="{{importContent}}"
+      />
+      
+      <view class="button-group">
+        <button class="btn-primary" bindtap="handleImport">导入</button>
+        <button class="btn-secondary" bindtap="handleClear">清空</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导出部分 -->
+  <view class="tool-section">
+    <view class="section-title">批量导出</view>
+    <view class="section-content">
+      <view class="export-options">
+        <view class="option-item">
+          <text class="option-label">导出格式</text>
+          <picker 
+            bindchange="handleFormatChange" 
+            value="{{formatIndex}}" 
+            range="{{formatOptions}}"
+          >
+            <view class="picker">
+              {{formatOptions[formatIndex]}}
+            </view>
+          </picker>
+        </view>
+        
+        <view class="option-item">
+          <text class="option-label">选择词库</text>
+          <picker 
+            bindchange="handleWordListChange" 
+            value="{{wordListIndex}}" 
+            range="{{wordLists}}"
+            range-key="name"
+          >
+            <view class="picker">
+              {{wordLists[wordListIndex].name}}
+            </view>
+          </picker>
+        </view>
+      </view>
+      
+      <view class="button-group">
+        <button class="btn-primary" bindtap="handleExport">导出</button>
+        <button class="btn-secondary" bindtap="handleCopy">复制</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导入结果弹窗 -->
+  <view class="modal" wx:if="{{showImportResult}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text>导入结果</text>
+        <text class="close" bindtap="handleCloseImportResult">×</text>
+      </view>
+      <view class="modal-body">
+        <text class="result-text">{{importResult}}</text>
+      </view>
+      <view class="modal-footer">
+        <button class="btn-confirm" bindtap="handleCloseImportResult">确定</button>
+      </view>
+    </view>
+  </view>
+</view> 

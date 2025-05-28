@@ -1,0 +1,13 @@
+<!--pages/test/test.wxml-->
+<view class="container">
+  <view class="title">云函数测试</view>
+  
+  <view class="test-section">
+    <button class="test-btn" bindtap="runTests">运行所有测试</button>
+  </view>
+
+  <view class="result-section">
+    <view class="result-title">测试结果：</view>
+    <view class="result-content">{{testResult}}</view>
+  </view>
+</view> 
