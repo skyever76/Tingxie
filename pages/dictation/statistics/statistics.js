@@ -13,20 +13,45 @@ Page({
     historyList: [],
     ec: {
       lazyLoad: true
-    }
+    },
+    page: 1,
+    pageSize: 20,
+    hasMore: true,
+    loading: false,
+    showSkeleton: true
   },
 
   onLoad() {
-    this.loadStatistics()
+    this.resetAndLoad()
   },
 
   onShow() {
+    this.resetAndLoad()
+  },
+
+  // 重置分页并加载
+  resetAndLoad() {
+    this.setData({
+      historyList: [],
+      page: 1,
+      hasMore: true,
+      showSkeleton: true
+    })
     this.loadStatistics()
   },
 
   // 加载统计数据
   async loadStatistics() {
+    if (this.data.loading || !this.data.hasMore) return
+    this.setData({ loading: true })
     try {
+      // 优先读取本地缓存第一页
+      if (this.data.page === 1) {
+        const cached = wx.getStorageSync('learningHistory') || []
+        if (cached.length > 0) {
+          this.setData({ historyList: cached, showSkeleton: false })
+        }
+      }
       wx.showLoading({ title: '加载中' })
       const db = wx.cloud.database()
       
@@ -39,28 +64,30 @@ Page({
       
       const totalWords = wordListsRes.data.reduce((sum, list) => sum + list.totalWords, 0)
       
-      // 获取学习记录
+      // 获取学习记录分页
       const historyRes = await db.collection('learning_history')
         .where({
           _openid: app.globalData.openid
         })
         .orderBy('date', 'desc')
-        .limit(30)
+        .skip((this.data.page - 1) * this.data.pageSize)
+        .limit(this.data.pageSize)
         .get()
       
-      const historyList = historyRes.data.map(item => ({
+      const newList = historyRes.data.map(item => ({
         ...item,
         date: this.formatDate(item.date),
         time: this.formatTime(item.duration)
       }))
+      const allList = this.data.historyList.concat(newList)
       
       // 计算总完成数和正确率
-      const completedWords = historyList.reduce((sum, item) => sum + item.words, 0)
-      const totalCorrect = historyList.reduce((sum, item) => sum + item.correct, 0)
+      const completedWords = allList.reduce((sum, item) => sum + item.words, 0)
+      const totalCorrect = allList.reduce((sum, item) => sum + item.correct, 0)
       const accuracy = completedWords ? Math.round(totalCorrect / completedWords * 100) : 0
       
       // 计算总时长
-      const totalDuration = historyList.reduce((sum, item) => sum + item.duration, 0)
+      const totalDuration = allList.reduce((sum, item) => sum + item.duration, 0)
       const totalTime = this.formatTime(totalDuration)
       
       this.setData({
@@ -68,19 +95,32 @@ Page({
         completedWords,
         accuracy,
         totalTime,
-        historyList
+        historyList: allList,
+        hasMore: newList.length === this.data.pageSize,
+        showSkeleton: false
       })
       
+      // 只缓存第一页
+      if (this.data.page === 1) wx.setStorageSync('learningHistory', newList)
+      
       // 渲染图表
-      this.initChart()
+      if (this.data.page === 1) this.initChart()
     } catch (error) {
       console.error('加载统计数据失败：', error)
       wx.showToast({
         title: '加载失败',
         icon: 'error'
       })
+      if (this.data.page === 1) {
+        const cached = wx.getStorageSync('learningHistory') || []
+        if (cached.length > 0) {
+          this.setData({ historyList: cached, showSkeleton: false })
+        }
+      }
     } finally {
       wx.hideLoading()
+      this.setData({ loading: false })
+      wx.stopPullDownRefresh && wx.stopPullDownRefresh()
     }
   },
 
@@ -174,8 +214,19 @@ Page({
     return `${minutes}分钟`
   },
 
+  // 获取设置中的振动开关
+  getVibrationSetting() {
+    try {
+      const settings = wx.getStorageSync('dictationSettings')
+      return settings && settings.vibration !== undefined ? settings.vibration : true
+    } catch {
+      return true
+    }
+  },
+
   // 导出学习记录
   async handleExport() {
+    if (this.getVibrationSetting()) wx.vibrateShort()
     try {
       const { historyList } = this.data
       if (historyList.length === 0) {
@@ -210,6 +261,20 @@ Page({
       wx.showToast({
         title: '导出失败',
         icon: 'error'
+      })
+    }
+  },
+
+  // 下拉刷新
+  onPullDownRefresh() {
+    this.resetAndLoad()
+  },
+
+  // 触底加载更多
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loading) {
+      this.setData({ page: this.data.page + 1 }, () => {
+        this.loadStatistics()
       })
     }
   }

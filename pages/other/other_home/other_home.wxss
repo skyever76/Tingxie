@@ -1,0 +1,12 @@
+.other-home-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+.other-title {
+  font-size: 36rpx;
+  color: #07c160;
+  font-weight: bold;
+} 

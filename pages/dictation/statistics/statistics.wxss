@@ -112,4 +112,31 @@
 .export-button text {
   color: #fff;
   font-size: 28rpx;
+}
+
+/* 骨架屏样式 */
+.skeleton-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+.skeleton-title {
+  width: 40%;
+  height: 28rpx;
+  background: #e0e0e0;
+  border-radius: 8rpx;
+  margin-bottom: 12rpx;
+}
+.skeleton-desc {
+  width: 60%;
+  height: 20rpx;
+  background: #f0f0f0;
+  border-radius: 8rpx;
+}
+
+/* 加载更多提示 */
+.load-more-tip {
+  text-align: center;
+  color: #999;
+  font-size: 26rpx;
+  padding: 30rpx 0 10rpx 0;
 } 

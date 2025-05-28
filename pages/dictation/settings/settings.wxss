@@ -69,4 +69,10 @@ switch {
 .reset-button text {
   color: #ff4d4f;
   font-size: 28rpx;
+}
+
+.radio-label {
+  margin-right: 40rpx;
+  font-size: 28rpx;
+  color: #333;
 } 

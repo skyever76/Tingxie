@@ -60,8 +60,19 @@ Page({
     })
   },
 
+  // 获取设置中的振动开关
+  getVibrationSetting() {
+    try {
+      const settings = wx.getStorageSync('dictationSettings')
+      return settings && settings.vibration !== undefined ? settings.vibration : true
+    } catch {
+      return true
+    }
+  },
+
   // 导入处理
   async handleImport() {
+    if (this.getVibrationSetting()) wx.vibrateShort()
     try {
       const { importContent, formatIndex } = this.data
       if (!importContent.trim()) {
@@ -138,6 +149,7 @@ Page({
 
   // 清空输入
   handleClear() {
+    if (this.getVibrationSetting()) wx.vibrateShort()
     this.setData({
       importContent: ''
     })
@@ -145,6 +157,7 @@ Page({
 
   // 导出处理
   async handleExport() {
+    if (this.getVibrationSetting()) wx.vibrateShort()
     try {
       const { wordLists, wordListIndex, formatIndex } = this.data
       const selectedList = wordLists[wordListIndex]
@@ -187,6 +200,7 @@ Page({
 
   // 复制到剪贴板
   handleCopy() {
+    if (this.getVibrationSetting()) wx.vibrateShort()
     this.handleExport()
   },
 

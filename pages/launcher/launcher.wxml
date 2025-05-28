@@ -1,0 +1,9 @@
+<view class="launcher-container">
+  <!-- <view class="app-title"> </view> -->
+  <view class="module-list">
+    <button class="module-btn" bindtap="goDictation">听写</button>
+    <button class="module-btn" bindtap="goQuiz">刷题</button>
+    <button class="module-btn" bindtap="goOther">其它</button>
+    <button wx:if="{{isAdmin}}" class="module-btn" bindtap="goAdmin">管理后台</button>
+  </view>
+</view> 

@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/login/login",
+    "pages/launcher/launcher",
     "pages/index/index",
     "pages/wordlist/wordlist",
     "pages/create/create",
@@ -15,21 +16,5 @@
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents",
-  "tabBar": {
-    "list": [
-      {
-        "pagePath": "pages/chinese/chinese",
-        "text": "中文词库"
-      },
-      {
-        "pagePath": "pages/english/english",
-        "text": "英文词库"
-      },
-      {
-        "pagePath": "pages/settings/settings",
-        "text": "设置"
-      }
-    ]
-  }
+  "lazyCodeLoading": "requiredComponents"
 } 

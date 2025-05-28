@@ -1,20 +1,40 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/login/login",
-    "pages/wordlist/wordlist",
-    "pages/wordlist_manage/wordlist_manage",
-    "pages/create/create",
-    "pages/dictation/dictation",
-    "pages/detail/detail",
-    "pages/settings/settings",
-    "pages/statistics/statistics",
-    "pages/import_export/import_export"
+    "pages/launcher/launcher",
+    "pages/login/login"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/dictation",
+      "pages": [
+        "chinese/chinese",
+        "english/english",
+        "chinese_texts/chinese_texts",
+        "english_lists/english_lists",
+        "dictation/dictation",
+        "wordlist_manage/wordlist_manage",
+        "settings/settings",
+        "statistics/statistics",
+        "import_export/import_export"
+      ]
+    },
+    {
+      "root": "pages/quiz",
+      "pages": [
+        "quiz_home/quiz_home"
+      ]
+    },
+    {
+      "root": "pages/other",
+      "pages": [
+        "other_home/other_home"
+      ]
+    }
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "纸笔听写",
+    "navigationBarTitleText": "亚当听写",
     "navigationBarTextStyle": "black"
   },
   "style": "v2",

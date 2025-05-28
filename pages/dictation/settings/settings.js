@@ -7,6 +7,9 @@ const DEFAULT_SETTINGS = {
   randomPlay: false,
   showPinyin: true,
   autoNext: false,
+  // 新增
+  switchMode: 'manual', // manual 或 auto
+  autoInterval: 3, // 自动切换间隔秒
   
   // 播放设置
   playSpeed: 1.0,
@@ -109,6 +112,20 @@ Page({
   // 声音反馈开关
   handleSoundFeedbackChange(e) {
     const settings = { ...this.data.settings, soundFeedback: e.detail.value }
+    this.setData({ settings })
+    this.saveSettings(settings)
+  },
+
+  // 答题切换方式
+  handleSwitchModeChange(e) {
+    const settings = { ...this.data.settings, switchMode: e.detail.value }
+    this.setData({ settings })
+    this.saveSettings(settings)
+  },
+
+  // 自动切换间隔
+  handleAutoIntervalChange(e) {
+    const settings = { ...this.data.settings, autoInterval: e.detail.value }
     this.setData({ settings })
     this.saveSettings(settings)
   },

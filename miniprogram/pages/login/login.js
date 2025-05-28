@@ -42,15 +42,15 @@ Page({
                     console.log("GlobalData.openid updated:", app.globalData.openid);
 
                     // 登录成功后返回首页
-                    wx.switchTab({
-                      url: '/pages/index/index',
+                    wx.reLaunch({
+                      url: '/pages/launcher/launcher',
                       success: () => {
                         const appAfterSwitch = getApp();
-                        console.log("LOGIN.JS (after switchTab success): app.globalData.userInfo IS:", JSON.parse(JSON.stringify(appAfterSwitch.globalData.userInfo)));
-                        console.log("Successfully switched to /pages/index/index");
+                        console.log("LOGIN.JS (after reLaunch success): app.globalData.userInfo IS:", JSON.parse(JSON.stringify(appAfterSwitch.globalData.userInfo)));
+                        console.log("Successfully reLaunched to /pages/launcher/launcher");
                       },
-                      fail: (switchTabErr) => {
-                        console.error("Failed to switchTab to /pages/index/index:", switchTabErr);
+                      fail: (reLaunchErr) => {
+                        console.error("Failed to reLaunch to /pages/launcher/launcher:", reLaunchErr);
                         wx.showToast({ title: '跳转首页失败', icon: 'none' });
                       }
                     });

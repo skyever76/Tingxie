@@ -1,0 +1,18 @@
+<!-- 中文词库多级目录页面 -->
+<view class="container">
+  <view class="header">中文词库</view>
+  <block wx:if="{{showSkeleton}}">
+    <view class="skeleton-item" wx:for="{{[1,2,3,4,5]}}" wx:key="index">
+      <view class="skeleton-title"></view>
+    </view>
+  </block>
+  <block wx:elif="{{categoryList.length > 0}}">
+    <view class="category-item" wx:for="{{categoryList}}" wx:key="_id" bindtap="handleCategoryTap" data-id="{{item._id}}">
+      <text class="category-name">{{item.name}}</text>
+    </view>
+  </block>
+  <view wx:else class="empty-tip">
+    <text>暂无目录数据</text>
+  </view>
+  <view wx:if="{{errorMsg}}" class="error-tip">{{errorMsg}}</view>
+</view> 

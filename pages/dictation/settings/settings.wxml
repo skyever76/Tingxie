@@ -85,6 +85,34 @@
       <text class="settings-label">声音反馈</text>
       <switch checked="{{settings.soundFeedback}}" bindchange="handleSoundFeedbackChange" color="#07c160" />
     </view>
+
+    <!-- 答题切换方式 -->
+    <view class="settings-item">
+      <text class="settings-label">答题切换方式</text>
+      <radio-group bindchange="handleSwitchModeChange" value="{{settings.switchMode}}">
+        <label class="radio-label">
+          <radio value="auto" checked="{{settings.switchMode === 'auto'}}" />自动
+        </label>
+        <label class="radio-label">
+          <radio value="manual" checked="{{settings.switchMode === 'manual'}}" />手动
+        </label>
+      </radio-group>
+    </view>
+
+    <!-- 自动切换间隔时间 -->
+    <view class="settings-item" wx:if="{{settings.switchMode === 'auto'}}">
+      <text class="settings-label">自动切换间隔</text>
+      <slider 
+        min="1" 
+        max="10" 
+        step="1" 
+        value="{{settings.autoInterval}}" 
+        bindchange="handleAutoIntervalChange"
+        activeColor="#07c160"
+        block-size="24"
+      />
+      <text class="settings-value">{{settings.autoInterval}}秒</text>
+    </view>
   </view>
 
   <!-- 重置按钮 -->
