@@ -12,7 +12,7 @@ exports.main = async (event, context) => {
   console.log('收到获取词库列表请求:', event)
   
   const wxContext = cloud.getWXContext()
-  const { category, grade } = event
+  const { category, grade, type } = event
   
   try {
     // 构建查询条件
@@ -30,10 +30,16 @@ exports.main = async (event, context) => {
       query = query.where({ grade })
     }
     
+    // 如果指定了类型，添加类型条件
+    if (type) {
+      query = query.where({ type })
+    }
+    
     console.log('查询条件:', {
       _openid: wxContext.OPENID,
       mainCategory: category,
-      grade
+      grade,
+      type
     })
     
     // 获取词库列表

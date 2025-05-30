@@ -149,13 +149,44 @@ Page({
             name: 'getWordList',
             data: { id: wordListId },
             success: res => {
-                const wordList = res.result.data.words || []
-                this.setData({ wordList })
-                // 2. 获取拼音
-                this.getPinyinForWords(wordList.map(w => w.text))
+                if (res.result && res.result.success) {
+                    const wordList = res.result.data
+                    if (!wordList || !wordList.words) {
+                        wx.showToast({ 
+                            title: '词库数据格式错误', 
+                            icon: 'none' 
+                        })
+                        this.setData({ loading: false })
+                        return
+                    }
+                    
+                    // 设置当前词语
+                    const currentWord = wordList.words[0]
+                    
+                    this.setData({ 
+                        wordList,
+                        words: wordList.words,
+                        totalWords: wordList.words.length,
+                        currentWord,
+                        currentIndex: 0
+                    })
+                    
+                    // 2. 获取拼音
+                    this.getPinyinForWords(wordList.words.map(w => w.text))
+                } else {
+                    wx.showToast({ 
+                        title: res.result?.error || '获取词库失败', 
+                        icon: 'none' 
+                    })
+                    this.setData({ loading: false })
+                }
             },
             fail: err => {
-                wx.showToast({ title: '获取词库失败', icon: 'none' })
+                console.error('获取词库失败:', err)
+                wx.showToast({ 
+                    title: '获取词库失败', 
+                    icon: 'none' 
+                })
                 this.setData({ loading: false })
             }
         })
@@ -171,14 +202,33 @@ Page({
             name: 'getPinyin',
             data: { words },
             success: res => {
-                // res.result.data 应为拼音数组
-                this.setData({
-                    pinyinList: res.result.data || [],
-                    loading: false
-                })
+                console.log('获取拼音结果:', res)
+                if (res.result && res.result.success && Array.isArray(res.result.data)) {
+                    // 将拼音数组与词语对应
+                    const wordsWithPinyin = this.data.words.map((word, index) => ({
+                        ...word,
+                        pinyin: res.result.data[index] || ''
+                    }))
+                    
+                    this.setData({
+                        words: wordsWithPinyin,
+                        loading: false
+                    })
+                } else {
+                    console.error('获取拼音失败:', res.result?.error || '未知错误')
+                    wx.showToast({ 
+                        title: res.result?.error || '拼音获取失败', 
+                        icon: 'none' 
+                    })
+                    this.setData({ loading: false })
+                }
             },
             fail: err => {
-                wx.showToast({ title: '拼音获取失败', icon: 'none' })
+                console.error('调用云函数失败:', err)
+                wx.showToast({ 
+                    title: '拼音获取失败', 
+                    icon: 'none' 
+                })
                 this.setData({ loading: false })
             }
         })
@@ -186,18 +236,29 @@ Page({
 
     // 播放当前词语
     playCurrentWord() {
-        if (!this.data.currentWord) return
+        if (!this.data.currentWord) {
+            console.error('当前词语不存在')
+            return
+        }
+
+        console.log('开始播放词语:', this.data.currentWord)
 
         this.setData({ 
             isPlaying: true,
             currentRepeat: 0
         })
 
-        this.startDictation()
+        this.playWord()
     },
 
     // 播放词语
     playWord() {
+        if (!this.data.currentWord) {
+            console.error('当前词语不存在')
+            this.setData({ isPlaying: false })
+            return
+        }
+
         if (this.data.currentRepeat >= this.data.settings.repeatTimes) {
             this.setData({ isPlaying: false })
             if (this.data.settings.autoNext) {
@@ -208,27 +269,59 @@ Page({
             return
         }
 
-        // 使用微信同声传译插件播放
-        const plugin = requirePlugin("WechatSI")
-        const manager = plugin.getRecordRecognitionManager()
+        console.log('播放词语:', this.data.currentWord.text)
 
+        // 使用微信内置的语音合成接口
         wx.textToSpeech({
             lang: 'zh_CN',
-            text: this.data.currentWord.text,
+            tts: true,
+            content: this.data.currentWord.text,
             speed: this.data.settings.playSpeed,
-            success: () => {
-                this.setData({
-                    currentRepeat: this.data.currentRepeat + 1
+            success: (res) => {
+                console.log('语音合成成功', res)
+                // 创建音频上下文
+                const innerAudioContext = wx.createInnerAudioContext()
+                innerAudioContext.src = res.filename
+                
+                // 监听可以播放
+                innerAudioContext.onCanplay(() => {
+                    console.log('音频可以播放')
+                    innerAudioContext.play()
                 })
-                // 继续播放直到达到重复次数
-                setTimeout(() => {
-                    this.playWord()
-                }, 1000)
+                
+                // 监听播放结束
+                innerAudioContext.onEnded(() => {
+                    console.log('播放结束')
+                    // 释放音频资源
+                    innerAudioContext.destroy()
+                    
+                    this.setData({
+                        currentRepeat: this.data.currentRepeat + 1
+                    })
+                    
+                    // 继续播放直到达到重复次数
+                    setTimeout(() => {
+                        this.playWord()
+                    }, 1000)
+                })
+                
+                // 监听播放错误
+                innerAudioContext.onError((err) => {
+                    console.error('播放失败', err)
+                    // 释放音频资源
+                    innerAudioContext.destroy()
+                    
+                    wx.showToast({
+                        title: '播放失败',
+                        icon: 'none'
+                    })
+                    this.setData({ isPlaying: false })
+                })
             },
             fail: (err) => {
-                console.error('播放失败', err)
+                console.error('语音合成失败', err)
                 wx.showToast({
-                    title: '播放失败',
+                    title: '语音合成失败',
                     icon: 'none'
                 })
                 this.setData({ isPlaying: false })
@@ -236,9 +329,11 @@ Page({
         })
     },
 
-    // 显示答案
+    // 显示/隐藏答案
     onShowAnswer() {
-        this.setData({ showAnswer: true });
+        this.setData({ 
+            showAnswer: !this.data.showAnswer 
+        });
     },
 
     // 切换到下一个词时，自动隐藏答案

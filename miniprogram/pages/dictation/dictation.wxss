@@ -57,12 +57,26 @@
   margin-bottom: 30rpx;
 }
 
+.current-word {
+  text-align: center;
+  margin: 40rpx 0;
+  padding: 30rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
 .word-text {
   font-size: 48rpx;
-  font-weight: bold;
   color: #333;
-  display: block;
-  margin-bottom: 10rpx;
+  margin-bottom: 20rpx;
+  font-weight: bold;
+}
+
+.word-pinyin {
+  font-size: 32rpx;
+  color: #666;
+  margin-top: 10rpx;
 }
 
 .word-phonetic {

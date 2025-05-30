@@ -23,12 +23,9 @@
     </view>
 
     <!-- 当前词语 -->
-    <view class="word-display">
-      <block wx:if="{{showAnswer}}">
-        <text class="word">{{words[currentIndex]}}</text>
-        <text class="pinyin" wx:if="{{settings.showPinyin && currentWord.pinyin}}">{{currentWord.pinyin}}</text>
-      </block>
-      <text wx:else class="placeholder">请听写</text>
+    <view class="current-word" wx:if="{{currentWord}}">
+      <view class="word-text">{{currentWord.text}}</view>
+      <view class="word-pinyin" wx:if="{{settings.showPinyin && currentWord.pinyin}}">{{currentWord.pinyin}}</view>
     </view>
 
     <!-- 控制按钮 -->
