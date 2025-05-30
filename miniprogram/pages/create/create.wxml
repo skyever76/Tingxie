@@ -1,154 +1,73 @@
 <!--pages/create/create.wxml-->
-<view class="container">
-  <view class="form">
-    <view class="form-item">
-      <text class="label">词库名称</text>
-      <input 
-        class="input" 
-        placeholder="请输入词库名称" 
-        value="{{name}}"
-        bindinput="onNameInput"
-      />
-    </view>
-
-    <view class="form-item">
-      <text class="label">词库描述</text>
-      <input 
-        class="input" 
-        placeholder="请输入词库描述（选填）" 
-        value="{{description}}"
-        bindinput="onDescInput"
-      />
-    </view>
-
-    <view class="form-item">
-      <text class="label">主分类</text>
-      <picker 
-        mode="selector" 
-        range="{{mainCategories}}" 
-        value="{{mainCategories.indexOf(mainCategory)}}"
-        bindchange="onMainCategoryChange"
-      >
-        <view class="picker">
-          {{mainCategory || '请选择主分类'}}
+<view class="page-container">
+    <view class="content-container">
+        <view class="header">
+            <text class="title">创建{{type === 'chinese' ? '中文' : '英文'}}词库</text>
         </view>
-      </picker>
-    </view>
 
-    <view class="form-item">
-      <text class="label">子分类</text>
-      <picker 
-        mode="selector" 
-        range="{{subCategories[mainCategory]}}" 
-        value="{{subCategories[mainCategory].indexOf(subCategory)}}"
-        bindchange="onSubCategoryChange"
-      >
-        <view class="picker">
-          {{subCategory || '请选择子分类'}}
+        <!-- 年级选择 -->
+        <view class="grade-section" wx:if="{{type === 'chinese'}}">
+            <view class="section-title">选择年级</view>
+            <picker 
+                bindchange="onGradeChange" 
+                value="{{gradeIndex}}" 
+                range="{{grades}}"
+                class="grade-picker"
+            >
+                <view class="picker-content">
+                    <text>{{selectedGrade || '请选择年级'}}</text>
+                    <text class="picker-arrow">▼</text>
+                </view>
+            </picker>
         </view>
-      </picker>
+
+        <!-- 输入区域 -->
+        <view class="input-section">
+            <view class="section-title">输入词语</view>
+            <textarea 
+                class="input-area" 
+                placeholder="请输入词语，每行一个。使用 #数字 来标记不同课文，例如：#2 乌黑 活泼 春日" 
+                value="{{content}}"
+                bindinput="onContentChange"
+                maxlength="-1"
+                auto-height
+            ></textarea>
+        </view>
+
+        <!-- 格式说明 -->
+        <view class="format-guide">
+            <view class="section-title">格式说明</view>
+            <view class="guide-content">
+                <text class="guide-item">1. 使用 #数字 来标记不同课文，例如：</text>
+                <text class="guide-example">#2 乌黑 活泼 春日</text>
+                <text class="guide-example">#3 荷花 清香 圆盘</text>
+                <text class="guide-item">2. 每个词语用空格分隔</text>
+                <text class="guide-item">3. 每个课文会自动创建一个词库</text>
+            </view>
+        </view>
+
+        <!-- 反馈信息区域 -->
+        <view class="feedback-area" wx:if="{{feedback.length > 0}}">
+            <view class="section-title">处理过程</view>
+            <scroll-view scroll-y class="feedback-content">
+                <view class="feedback-item" wx:for="{{feedback}}" wx:key="index">{{item}}</view>
+            </scroll-view>
+        </view>
     </view>
 
-    <view class="form-item">
-      <text class="label">词语列表</text>
-      <text class="tip">每行一个词语，格式：词语 [拼音]</text>
-      <textarea 
-        class="textarea" 
-        placeholder="苹果 píng guǒ&#10;香蕉 xiāng jiāo" 
-        value="{{words}}"
-        bindinput="onWordsInput"
-      />
+    <!-- 固定在底部的按钮 -->
+    <view class="footer">
+        <view class="button-group">
+            <button 
+                class="cancel-btn" 
+                bindtap="onCancel"
+            >取消</button>
+            <button 
+                class="submit-btn" 
+                bindtap="createWordList" 
+                loading="{{loading}}"
+                disabled="{{loading || !selectedGrade}}"
+            >创建词库</button>
+        </view>
     </view>
-
-    <view class="button-group">
-      <button 
-        class="submit-btn" 
-        bindtap="createWordList"
-        loading="{{loading}}"
-      >创建词库</button>
-      
-      <button 
-        class="batch-btn" 
-        bindtap="showBatchImport"
-      >批量导入</button>
-    </view>
-  </view>
-
-  <!-- 批量导入界面 -->
-  <view class="batch-import" wx:if="{{showBatchImport}}">
-    <view class="batch-import-header">
-      <text class="title">批量导入</text>
-      <view class="close" bindtap="hideBatchImport">×</view>
-    </view>
-    
-    <view class="batch-import-content">
-      <view class="form-item">
-        <text class="label">一级目录</text>
-        <picker 
-          mode="selector" 
-          range="{{mainCategories}}" 
-          value="{{mainCategories.indexOf(mainCategory)}}"
-          bindchange="onMainCategoryChange"
-        >
-          <view class="picker">
-            {{mainCategory || '请选择一级目录'}}
-          </view>
-        </picker>
-      </view>
-
-      <view class="form-item">
-        <text class="label">二级目录</text>
-        <picker 
-          mode="selector" 
-          range="{{subCategories[mainCategory]}}" 
-          value="{{subCategories[mainCategory].indexOf(subCategory)}}"
-          bindchange="onSubCategoryChange"
-        >
-          <view class="picker">
-            {{subCategory || '请选择二级目录'}}
-          </view>
-        </picker>
-      </view>
-
-      <view class="form-item">
-        <text class="label">导入内容</text>
-        <textarea class="textarea" 
-                  placeholder="请输入要导入的内容" 
-                  value="{{batchImportText}}"
-                  bindinput="onBatchImportInput"
-                  style="height: 300rpx;"
-                  maxlength="-1">
-        </textarea>
-      </view>
-
-      <text class="tip" wx:if="{{mainCategory === '中文词库'}}">
-        支持以下格式：&#10;
-        # 2 乌黑 活泼 春日 ...&#10;
-        # 3 荷花 清香 ...&#10;
-        ...&#10;
-        注意：&#10;
-        1. 每课以 #数字 开头，后面空格分隔词语&#10;
-        2. 拼音会自动生成，无需手动输入
-      </text>
-
-      <text class="tip" wx:if="{{mainCategory === '英文词库'}}">
-        支持以下格式：&#10;
-        word1 meaning1&#10;
-        word2 meaning2&#10;
-        ...&#10;
-        注意：&#10;
-        1. 每行一个单词，空格分隔释义
-      </text>
-
-      <!-- 日志显示区 -->
-      <view class="import-log" wx:if="{{importLog && importLog.length}}">
-        <text wx:for="{{importLog}}" wx:key="*this" class="log-line">{{item}}</text>
-      </view>
-    </view>
-
-    <view class="batch-import-footer">
-      <button class="btn cancel" bindtap="hideBatchImport">取消</button>
-      <button class="btn confirm" bindtap="handleBatchImport" loading="{{loading}}">确认导入</button>
-    </view>
-  </view>
 </view>

@@ -1,7 +1,6 @@
 <view class="container">
   <view class="header">
     <text class="title">我的词库</text>
-    <button class="create-btn" bindtap="goToCreate">创建词库</button>
   </view>
 
   <!-- 分类切换 -->
@@ -44,7 +43,7 @@
     </block>
     <block wx:elif="{{wordLists.length === 0}}">
       <view class="empty">
-        <text>还没有词库，点击上方按钮创建</text>
+        <text>还没有词库，点击下方按钮导入</text>
       </view>
     </block>
     <block wx:else>
@@ -61,5 +60,35 @@
         </view>
       </view>
     </block>
+  </view>
+
+  <!-- 导入词库区域 -->
+  <view class="import-section">
+    <view class="title">导入词库</view>
+    <view class="import-options">
+      <view class="import-option" bindtap="goToImport" data-type="chinese">
+        <text>中文词库</text>
+      </view>
+      <view class="import-option" bindtap="goToImport" data-type="english">
+        <text>英文词库</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导入模态框 -->
+  <view class="modal" wx:if="{{showImportModal}}">
+    <view class="modal-mask" bindtap="hideImportModal"></view>
+    <view class="modal-content">
+      <view class="modal-title">导入{{importType === 'chinese' ? '中文' : '英文'}}词库</view>
+      <view class="modal-body">
+        <text>请按照以下格式输入：</text>
+        <text class="format-example">#2 乌黑 活泼 春日</text>
+        <text class="format-example">#3 荷花 清香 圆盘</text>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="hideImportModal">取消</button>
+        <button class="modal-btn confirm" bindtap="goToImport">开始导入</button>
+      </view>
+    </view>
   </view>
 </view> 

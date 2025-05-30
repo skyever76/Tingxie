@@ -1,15 +1,256 @@
-.container {
+.page-container {
+  min-height: 100vh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-container {
+  flex: 1;
+  padding: 30rpx;
+  padding-bottom: 140rpx; /* 为底部按钮留出空间 */
+  overflow-y: auto;
+}
+
+.header {
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.section-title {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+/* 年级选择区域 */
+.grade-section {
+  margin-bottom: 30rpx;
+}
+
+.grade-picker {
+  background: #f8f8f8;
+  border-radius: 12rpx;
   padding: 20rpx;
 }
 
-.form {
-  background: #fff;
-  border-radius: 10rpx;
+.picker-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.picker-arrow {
+  color: #999;
+  font-size: 24rpx;
+}
+
+/* 输入区域 */
+.input-section {
+  margin-bottom: 30rpx;
+}
+
+.input-area {
+  width: 100%;
+  min-height: 400rpx;
+  background: #f8f8f8;
+  border-radius: 12rpx;
   padding: 20rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* 格式说明区域 */
+.format-guide {
+  background: #f8f8f8;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 30rpx;
+}
+
+.guide-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.guide-item {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.guide-example {
+  font-size: 26rpx;
+  color: #999;
+  background: #fff;
+  padding: 12rpx;
+  border-radius: 8rpx;
+  margin-left: 20rpx;
+}
+
+/* 反馈信息区域 */
+.feedback-area {
+  background: #f8f8f8;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  max-height: 300rpx;
+}
+
+.feedback-content {
+  max-height: 240rpx;
+}
+
+.feedback-item {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.6;
+  padding: 4rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.feedback-item:last-child {
+  border-bottom: none;
+}
+
+/* 底部按钮 */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 30rpx;
+  background: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.button-group {
+  display: flex;
+  gap: 20rpx;
+}
+
+.cancel-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  background: #f5f5f5;
+  color: #666;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+}
+
+.submit-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  background: #07c160;
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+}
+
+.submit-btn[disabled] {
+  background: #ccc;
+}
+
+/* 模态框样式 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 30rpx;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  color: #333;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+
+.modal-body {
+  padding: 20rpx 0;
+}
+
+.modal-body text {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.format-example {
+  color: #999;
+  font-size: 26rpx;
+  background: #f5f5f5;
+  padding: 12rpx;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.modal-footer {
+  margin-top: 30rpx;
+}
+
+.modal-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  background: #07c160;
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+}
+
+.form-group {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
 }
 
 .form-item {
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
 }
 
 .label {
@@ -37,42 +278,54 @@
 }
 
 .picker {
-  width: 100%;
   height: 80rpx;
-  border: 1rpx solid #ddd;
-  border-radius: 8rpx;
-  padding: 0 20rpx;
-  font-size: 28rpx;
   line-height: 80rpx;
+  padding: 0 20rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #333;
 }
 
 .textarea {
   width: 100%;
-  height: 300rpx;
-  border: 1rpx solid #ddd;
+  background: #f8f8f8;
   border-radius: 8rpx;
   padding: 20rpx;
   font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
 }
 
-.button-group {
-  display: flex;
-  gap: 20rpx;
-  margin-top: 40rpx;
+.import-area {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
 }
 
-.submit-btn, .batch-btn {
-  flex: 1;
-  height: 88rpx;
-  line-height: 88rpx;
-  text-align: center;
-  border-radius: 44rpx;
-  font-size: 32rpx;
+.log-area {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
 }
 
-.submit-btn {
-  background: #07c160;
-  color: #fff;
+.log-title {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.log-item {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+  padding: 6rpx 0;
+}
+
+.button-area {
+  padding: 30rpx 0;
 }
 
 .batch-btn {
@@ -94,37 +347,12 @@
   z-index: 1000;
 }
 
-.modal-content {
-  width: 90%;
-  max-height: 90vh;
-  background: #fff;
-  border-radius: 20rpx;
-  overflow: hidden;
-}
-
 .modal-header {
   padding: 30rpx;
   border-bottom: 1rpx solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.modal-title {
-  font-size: 32rpx;
-  font-weight: bold;
-}
-
-.modal-close {
-  font-size: 40rpx;
-  color: #999;
-  padding: 0 20rpx;
-}
-
-.modal-body {
-  padding: 30rpx;
-  max-height: 60vh;
-  overflow-y: auto;
 }
 
 .radio-group {
@@ -286,4 +514,9 @@
 .log-line {
   display: block;
   margin-bottom: 4rpx;
+}
+
+.format-link {
+  font-size: 28rpx;
+  color: #07c160;
 } 

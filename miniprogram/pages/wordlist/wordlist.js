@@ -2,7 +2,9 @@
 Page({
   data: {
     wordLists: [],
-    loading: true,
+    loading: false,
+    showImportModal: false,
+    importType: 'chinese', // 'chinese' 或 'english'
     currentCategory: 'chinese', // 当前分类：chinese 或 english
     categories: {
       chinese: {
@@ -17,37 +19,104 @@ Page({
   },
 
   onLoad: function() {
-    this.getWordLists()
+    this.loadWordLists()
   },
 
   onShow: function() {
     // 每次显示页面时刷新词库列表
-    this.getWordLists()
+    this.loadWordLists()
   },
 
-  // 获取词库列表
-  getWordLists: function() {
+  // 加载词库列表
+  async loadWordLists() {
     this.setData({ loading: true })
-    wx.cloud.callFunction({
-      name: 'getMyWordLists',
-      data: {
-        category: this.data.currentCategory,
-        grade: this.data.selectedGrade
-      },
-      success: res => {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'getMyWordLists',
+        data: {
+          category: this.data.currentCategory
+        }
+      })
+      if (res.result && res.result.data) {
         this.setData({
-          wordLists: res.result.data || [],
-          loading: false
+          wordLists: res.result.data
         })
-      },
-      fail: err => {
-        console.error('获取词库列表失败', err)
-        wx.showToast({
-          title: '获取词库列表失败',
-          icon: 'none'
-        })
-        this.setData({ loading: false })
       }
+    } catch (error) {
+      console.error('加载词库列表失败:', error)
+      wx.showToast({
+        title: '加载失败',
+        icon: 'none'
+      })
+    } finally {
+      this.setData({ loading: false })
+    }
+  },
+
+  // 显示导入模态框
+  showImportModal(type) {
+    this.setData({
+      showImportModal: true,
+      importType: type
+    })
+  },
+
+  // 隐藏导入模态框
+  hideImportModal() {
+    this.setData({
+      showImportModal: false
+    })
+  },
+
+  // 跳转到导入页面
+  goToImport(e) {
+    const type = e.currentTarget.dataset.type
+    wx.navigateTo({
+      url: `/pages/create/create?type=${type}`
+    })
+  },
+
+  // 删除词库
+  async deleteWordList(e) {
+    const { id } = e.currentTarget.dataset
+    try {
+      const res = await wx.showModal({
+        title: '确认删除',
+        content: '确定要删除这个词库吗？',
+        confirmText: '删除',
+        confirmColor: '#ff4d4f'
+      })
+      
+      if (res.confirm) {
+        wx.showLoading({ title: '删除中...' })
+        const result = await wx.cloud.callFunction({
+          name: 'deleteWordList',
+          data: { id }
+        })
+        
+        if (result.result && result.result.success) {
+          wx.showToast({ title: '删除成功' })
+          this.loadWordLists()
+        } else {
+          throw new Error(result.result?.error || '删除失败')
+        }
+      }
+    } catch (error) {
+      console.error('删除词库失败:', error)
+      wx.showToast({
+        title: error.message || '删除失败',
+        icon: 'none'
+      })
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  // 跳转到词库详情页
+  goToDetail(e) {
+    const { id } = e.currentTarget.dataset
+    wx.navigateTo({
+      url: `/pages/wordlist-detail/wordlist-detail?id=${id}`
     })
   },
 
@@ -57,7 +126,7 @@ Page({
     this.setData({
       currentCategory: category
     }, () => {
-      this.getWordLists()
+      this.loadWordLists()
     })
   },
 
@@ -76,50 +145,12 @@ Page({
     })
   },
 
-  // 删除词库
-  deleteWordList: function(e) {
-    const { id } = e.currentTarget.dataset
-    wx.showModal({
-      title: '确认删除',
-      content: '确定要删除这个词库吗？',
-      success: res => {
-        if (res.confirm) {
-          wx.cloud.callFunction({
-            name: 'deleteWordList',
-            data: { id },
-            success: res => {
-              if (res.result.success) {
-                wx.showToast({
-                  title: '删除成功',
-                  icon: 'success'
-                })
-                this.getWordLists()
-              } else {
-                wx.showToast({
-                  title: '删除失败',
-                  icon: 'none'
-                })
-              }
-            },
-            fail: err => {
-              console.error('删除词库失败', err)
-              wx.showToast({
-                title: '删除失败',
-                icon: 'none'
-              })
-            }
-          })
-        }
-      }
-    })
-  },
-
   selectGrade: function(e) {
-    const grade = e.currentTarget.dataset.grade;
+    const grade = e.currentTarget.dataset.grade
     this.setData({
       selectedGrade: grade
     }, () => {
-      this.getWordLists();
-    });
+      this.loadWordLists()
+    })
   }
 }) 
