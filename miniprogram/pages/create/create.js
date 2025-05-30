@@ -8,25 +8,29 @@ Page({
         name: '',
         description: '',
         words: '',
-        mainCategory: '语文',
-        subCategory: '小学一年级',
-        mainCategories: ['语文', '英语', '其它'],
+        mainCategory: '',
+        subCategory: '',
+        mainCategories: ['中文词库', '英文词库'],
         subCategories: {
-            '语文': ['小学一年级', '小学二年级', '小学三年级', '小学四年级', '小学五年级', '小学六年级'],
-            '英语': ['小托福', '托福', '小学英语', '初中英语', '高中英语'],
-            '其它': ['自定义']
+            '中文词库': ['一年级上', '一年级下', '二年级上', '二年级下', '三年级上', '三年级下', '四年级上', '四年级下', '五年级上', '五年级下'],
+            '英文词库': ['小托福', '托福', 'SSAT', '其它']
         },
-        loading: false
+        loading: false,
+        showBatchImport: false,
+        batchImportText: '',
+        batchImportType: 'chinese', // 'chinese' 或 'english'
+        importLog: [] // 新增日志数组
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad(options) {
-        // 初始化子分类
+        // 设置默认值
         this.setData({
-            subCategory: this.data.subCategories[this.data.mainCategory][0]
-        })
+            mainCategory: this.data.mainCategories[0],
+            subCategory: this.data.subCategories[this.data.mainCategories[0]][0]
+        });
     },
 
     /**
@@ -206,5 +210,145 @@ Page({
         }
         
         return words
+    },
+
+    // 显示批量导入界面
+    showBatchImport() {
+        this.setData({ showBatchImport: true });
+    },
+
+    // 隐藏批量导入界面
+    hideBatchImport() {
+        this.setData({ 
+            showBatchImport: false,
+            batchImportText: ''
+        });
+    },
+
+    // 批量导入文本变化
+    onBatchImportInput(e) {
+        this.setData({ batchImportText: e.detail.value });
+    },
+
+    // 切换导入类型
+    onImportTypeChange(e) {
+        this.setData({ batchImportType: e.detail.value });
+    },
+
+    // 添加日志
+    addImportLog(msg) {
+        this.setData({
+            importLog: (this.data.importLog || []).concat([msg])
+        });
+    },
+
+    // 处理批量导入
+    async handleBatchImport() {
+        const { batchImportText, mainCategory, subCategory } = this.data;
+        if (!batchImportText.trim()) {
+            wx.showToast({ title: '请输入要导入的内容', icon: 'none' });
+            return;
+        }
+        if (!mainCategory || !subCategory) {
+            wx.showToast({ title: '请选择一级目录和二级目录', icon: 'none' });
+            return;
+        }
+        this.setData({ loading: true, importLog: [] });
+        try {
+            const lessons = this.parseBatchImport(batchImportText, mainCategory, subCategory);
+            const results = [];
+            for (let i = 0; i < lessons.length; i++) {
+                const lesson = lessons[i];
+                this.addImportLog(`正在处理：${lesson.name}`);
+                try {
+                    const result = await this.createWordListFromLesson(lesson);
+                    this.addImportLog(`✅ ${lesson.name} 导入成功`);
+                    results.push(result);
+                } catch (err) {
+                    this.addImportLog(`❌ ${lesson.name} 导入失败: ${err.message}`);
+                }
+            }
+            console.log('批量导入结果:', results);
+            wx.showToast({ title: '导入完成', icon: 'success' });
+            setTimeout(() => { wx.navigateBack(); }, 1500);
+        } catch (error) {
+            console.error('批量导入失败:', error);
+            wx.showToast({ title: '导入失败', icon: 'none' });
+        } finally {
+            this.setData({ loading: false });
+        }
+    },
+
+    // 解析批量导入文本
+    parseBatchImport(text, mainCategory, subCategory) {
+        const lines = text.split('\n').filter(line => line.trim()); // 过滤空行
+        const lessons = [];
+        let currentLesson = null;
+
+        for (const line of lines) {
+            const trimmedLine = line.trim();
+            // 支持 #2 或 # 2 或 #2 乌黑 ... 或 # 2 乌黑 ...
+            const lessonMatch = trimmedLine.match(/^#\s*(\d+)\s*(.*)$/);
+            if (lessonMatch) {
+                if (currentLesson) {
+                    lessons.push(currentLesson);
+                }
+                const lessonNumber = lessonMatch[1];
+                currentLesson = {
+                    name: `${subCategory}${lessonNumber}`,
+                    description: `${subCategory}第${lessonNumber}课`,
+                    words: []
+                };
+                // 处理本行后面的词语
+                const restWords = lessonMatch[2].trim();
+                if (restWords) {
+                    const words = restWords.split(/\s+/).filter(word => word.trim());
+                    for (const word of words) {
+                        currentLesson.words.push({ text: word });
+                    }
+                }
+            } else if (currentLesson) {
+                // 解析词语（支持每行多个词语）
+                const words = trimmedLine.split(/\s+/).filter(word => word.trim());
+                for (const word of words) {
+                    currentLesson.words.push({ text: word });
+                }
+            }
+        }
+
+        // 添加最后一个课
+        if (currentLesson) {
+            lessons.push(currentLesson);
+        }
+
+        console.log('解析结果:', lessons);
+        return lessons;
+    },
+
+    // 从课创建词库
+    async createWordListFromLesson(lesson) {
+        return new Promise((resolve, reject) => {
+            // 直接创建词库，不获取拼音
+            wx.cloud.callFunction({
+                name: 'addWordList',
+                data: {
+                    name: lesson.name,
+                    description: lesson.description,
+                    words: lesson.words, // 只存 text 字段
+                    mainCategory: this.data.mainCategory,
+                    subCategory: this.data.subCategory,
+                    grade: this.data.subCategory
+                },
+                success: res => {
+                    console.log('创建词库结果:', res.result);
+                    if (res.result.success) {
+                        resolve(res.result);
+                    } else {
+                        reject(new Error(res.result.error || '创建词库失败'));
+                    }
+                },
+                fail: reject
+            });
+        });
     }
 })

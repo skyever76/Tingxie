@@ -1,6 +1,11 @@
 Page({
   data: {
-    categories: [],
+    categories: [
+      { id: 'toefl_primary', name: '小托福' },
+      { id: 'toefl', name: '托福' },
+      { id: 'ssat', name: 'SSAT' },
+      { id: 'other', name: '其它' }
+    ],
     loading: true
   },
   onLoad() {

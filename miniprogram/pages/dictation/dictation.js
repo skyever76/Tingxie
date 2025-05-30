@@ -35,7 +35,8 @@ Page({
         timeSpent: 0,
         startTime: null,
         completedWords: 0,
-        totalWords: 0
+        totalWords: 0,
+        pinyinList: [],
     },
 
     /**
@@ -44,7 +45,7 @@ Page({
     onLoad(options) {
         if (options.id) {
             this.setData({ id: options.id })
-            this.loadWordList()
+            this.loadWordList(options.id)
         }
         this.setData({
             lessonId: options.lessonId || '',
@@ -140,54 +141,45 @@ Page({
         })
     },
 
-    // 加载词库
-    loadWordList() {
+    // 加载词库并获取拼音
+    loadWordList(wordListId) {
         this.setData({ loading: true })
-
+        // 1. 获取词库
         wx.cloud.callFunction({
             name: 'getWordList',
-            data: { id: this.data.id },
+            data: { id: wordListId },
             success: res => {
-                if (res.result.success) {
-                    const wordList = res.result.data
-                    let words = wordList.words
-                    
-                    // 如果设置了随机顺序，打乱词语顺序
-                    if (this.data.settings.randomOrder) {
-                        words = this.shuffleArray([...words])
-                    }
-
-                    // 处理拼音
-                    words = words.map(word => {
-                        if (typeof word === 'string') {
-                            return {
-                                word,
-                                pinyin: this.getPinyin(word)
-                            }
-                        }
-                        return word
-                    })
-
-                    this.setData({
-                        wordList,
-                        words,
-                        currentWord: words[this.data.currentIndex],
-                        totalWords: words.length,
-                        loading: false
-                    })
-                } else {
-                    wx.showToast({
-                        title: res.result.error || '加载失败',
-                        icon: 'none'
-                    })
-                }
+                const wordList = res.result.data.words || []
+                this.setData({ wordList })
+                // 2. 获取拼音
+                this.getPinyinForWords(wordList.map(w => w.text))
             },
             fail: err => {
-                console.error('加载词库失败', err)
-                wx.showToast({
-                    title: '加载失败',
-                    icon: 'none'
+                wx.showToast({ title: '获取词库失败', icon: 'none' })
+                this.setData({ loading: false })
+            }
+        })
+    },
+
+    // 调用云函数获取拼音
+    getPinyinForWords(words) {
+        if (!words.length) {
+            this.setData({ pinyinList: [], loading: false })
+            return
+        }
+        wx.cloud.callFunction({
+            name: 'getPinyin',
+            data: { words },
+            success: res => {
+                // res.result.data 应为拼音数组
+                this.setData({
+                    pinyinList: res.result.data || [],
+                    loading: false
                 })
+            },
+            fail: err => {
+                wx.showToast({ title: '拼音获取失败', icon: 'none' })
+                this.setData({ loading: false })
             }
         })
     },

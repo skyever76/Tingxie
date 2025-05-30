@@ -10,7 +10,7 @@ const db = cloud.database()
 // 云函数入口函数
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
-  const { category, keyword } = event
+  const { category, grade } = event
   
   try {
     // 构建查询条件
@@ -23,20 +23,17 @@ exports.main = async (event, context) => {
       query = query.where({ category })
     }
     
+    // 如果指定了年级，添加年级条件
+    if (grade) {
+      query = query.where({ grade })
+    }
+    
     // 获取词库列表
     const result = await query
       .orderBy('updatedAt', 'desc')
       .get()
     
     let data = result.data
-    
-    // 如果有关键字，进行本地过滤
-    if (keyword) {
-      data = data.filter(item => 
-        item.name.includes(keyword) || 
-        item.description.includes(keyword)
-      )
-    }
     
     return {
       success: true,

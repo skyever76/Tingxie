@@ -67,7 +67,7 @@ Page({
     goDictation() {
         console.log('听写按钮被点击');
         wx.navigateTo({
-            url: '/pages/dictation/dictation',
+            url: '/pages/wordlist/wordlist',
             success(res) {
                 console.log('导航成功:', res);
             },

@@ -30,7 +30,7 @@
         bindchange="onMainCategoryChange"
       >
         <view class="picker">
-          {{mainCategory}}
+          {{mainCategory || '请选择主分类'}}
         </view>
       </picker>
     </view>
@@ -44,7 +44,7 @@
         bindchange="onSubCategoryChange"
       >
         <view class="picker">
-          {{subCategory}}
+          {{subCategory || '请选择子分类'}}
         </view>
       </picker>
     </view>
@@ -60,10 +60,95 @@
       />
     </view>
 
-    <button 
-      class="submit-btn" 
-      bindtap="createWordList"
-      loading="{{loading}}"
-    >创建词库</button>
+    <view class="button-group">
+      <button 
+        class="submit-btn" 
+        bindtap="createWordList"
+        loading="{{loading}}"
+      >创建词库</button>
+      
+      <button 
+        class="batch-btn" 
+        bindtap="showBatchImport"
+      >批量导入</button>
+    </view>
+  </view>
+
+  <!-- 批量导入界面 -->
+  <view class="batch-import" wx:if="{{showBatchImport}}">
+    <view class="batch-import-header">
+      <text class="title">批量导入</text>
+      <view class="close" bindtap="hideBatchImport">×</view>
+    </view>
+    
+    <view class="batch-import-content">
+      <view class="form-item">
+        <text class="label">一级目录</text>
+        <picker 
+          mode="selector" 
+          range="{{mainCategories}}" 
+          value="{{mainCategories.indexOf(mainCategory)}}"
+          bindchange="onMainCategoryChange"
+        >
+          <view class="picker">
+            {{mainCategory || '请选择一级目录'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">二级目录</text>
+        <picker 
+          mode="selector" 
+          range="{{subCategories[mainCategory]}}" 
+          value="{{subCategories[mainCategory].indexOf(subCategory)}}"
+          bindchange="onSubCategoryChange"
+        >
+          <view class="picker">
+            {{subCategory || '请选择二级目录'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">导入内容</text>
+        <textarea class="textarea" 
+                  placeholder="请输入要导入的内容" 
+                  value="{{batchImportText}}"
+                  bindinput="onBatchImportInput"
+                  style="height: 300rpx;"
+                  maxlength="-1">
+        </textarea>
+      </view>
+
+      <text class="tip" wx:if="{{mainCategory === '中文词库'}}">
+        支持以下格式：&#10;
+        # 2 乌黑 活泼 春日 ...&#10;
+        # 3 荷花 清香 ...&#10;
+        ...&#10;
+        注意：&#10;
+        1. 每课以 #数字 开头，后面空格分隔词语&#10;
+        2. 拼音会自动生成，无需手动输入
+      </text>
+
+      <text class="tip" wx:if="{{mainCategory === '英文词库'}}">
+        支持以下格式：&#10;
+        word1 meaning1&#10;
+        word2 meaning2&#10;
+        ...&#10;
+        注意：&#10;
+        1. 每行一个单词，空格分隔释义
+      </text>
+
+      <!-- 日志显示区 -->
+      <view class="import-log" wx:if="{{importLog && importLog.length}}">
+        <text wx:for="{{importLog}}" wx:key="*this" class="log-line">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="batch-import-footer">
+      <button class="btn cancel" bindtap="hideBatchImport">取消</button>
+      <button class="btn confirm" bindtap="handleBatchImport" loading="{{loading}}">确认导入</button>
+    </view>
   </view>
 </view>

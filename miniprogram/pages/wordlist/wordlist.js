@@ -7,11 +7,11 @@ Page({
     categories: {
       chinese: {
         name: '中文词库',
-        grades: ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级']
+        grades: ['一年级上', '一年级下', '二年级上', '二年级下', '三年级上', '三年级下', '四年级上', '四年级下', '五年级上', '五年级下']
       },
       english: {
         name: '英文词库',
-        types: ['基础词汇', '进阶词汇', '专业词汇', '考试词汇']
+        types: ['小托福', '托福', 'SSAT', '其它']
       }
     }
   },
@@ -31,7 +31,8 @@ Page({
     wx.cloud.callFunction({
       name: 'getMyWordLists',
       data: {
-        category: this.data.currentCategory
+        category: this.data.currentCategory,
+        grade: this.data.selectedGrade
       },
       success: res => {
         this.setData({
@@ -111,5 +112,14 @@ Page({
         }
       }
     })
+  },
+
+  selectGrade: function(e) {
+    const grade = e.currentTarget.dataset.grade;
+    this.setData({
+      selectedGrade: grade
+    }, () => {
+      this.getWordLists();
+    });
   }
 }) 

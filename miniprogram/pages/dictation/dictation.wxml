@@ -139,5 +139,10 @@
       <text wx:if="{{lessonId}}">正在听写课文：{{lessonId}}</text>
       <text wx:if="{{listId}}">正在听写List：{{listId}}</text>
     </view>
+
+    <view wx:for="{{wordList}}" wx:key="index">
+      <text>{{item.text}}</text>
+      <text wx:if="{{pinyinList[index]}}">（{{pinyinList[index]}}）</text>
+    </view>
   </block>
 </view>
