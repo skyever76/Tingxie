@@ -31,15 +31,29 @@ Page({
   async loadWordLists() {
     this.setData({ loading: true })
     try {
+      console.log('开始加载词库列表:', {
+        category: this.data.currentCategory
+      })
+
       const res = await wx.cloud.callFunction({
         name: 'getMyWordLists',
         data: {
-          category: this.data.currentCategory
+          category: this.data.currentCategory === 'chinese' ? '中文词库' : '英文词库'
         }
       })
-      if (res.result && res.result.data) {
+
+      console.log('获取词库列表结果:', res)
+
+      if (res.result && res.result.success) {
         this.setData({
           wordLists: res.result.data
+        })
+        console.log('更新词库列表:', res.result.data)
+      } else {
+        console.error('获取词库列表失败:', res.result?.error || '未知错误')
+        wx.showToast({
+          title: '加载失败',
+          icon: 'none'
         })
       }
     } catch (error) {

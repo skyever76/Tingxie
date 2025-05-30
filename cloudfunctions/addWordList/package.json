@@ -1,0 +1,9 @@
+{
+  "name": "addWordList",
+  "version": "1.0.0",
+  "description": "Add a new word list",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+} 

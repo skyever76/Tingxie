@@ -386,38 +386,98 @@ Page({
         });
 
         try {
-            const res = await wx.cloud.callFunction({
-                name: 'addWordList',
-                data: {
-                    name: selectedGrade,
-                    description: `${selectedGrade}词语`,
-                    words: content.trim().split('\n').map(line => ({ text: line.trim() })),
+            // 解析输入的文本
+            const lines = content.trim().split('\n');
+            const lessons = new Map();
+            let currentLessonNum = null;
+            let totalWords = 0;
+
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) continue;
+
+                // 检查是否是课文标记行
+                const lessonMatch = trimmedLine.match(/^#\s*(\d+)\s*(.*)$/);
+                if (lessonMatch) {
+                    const lessonNum = lessonMatch[1];
+                    currentLessonNum = lessonNum;
+                    
+                    // 创建新课文的词语列表
+                    if (!lessons.has(lessonNum)) {
+                        lessons.set(lessonNum, {
+                            name: `${selectedGrade}第${lessonNum}课`,
+                            description: `${selectedGrade}第${lessonNum}课词语`,
+                            words: []
+                        });
+                    }
+
+                    // 处理标记行后面的词语
+                    const restWords = lessonMatch[2].trim();
+                    if (restWords) {
+                        const words = restWords.split(/[,\s]+/).filter(word => word.trim());
+                        lessons.get(lessonNum).words.push(...words.map(text => ({ text })));
+                        totalWords += words.length;
+                    }
+                } else if (currentLessonNum) {
+                    // 处理当前课文下的词语行
+                    const words = trimmedLine.split(/[,\s]+/).filter(word => word.trim());
+                    if (words.length > 0) {
+                        lessons.get(currentLessonNum).words.push(...words.map(text => ({ text })));
+                        totalWords += words.length;
+                    }
+                }
+            }
+
+            // 创建词库
+            const results = [];
+            for (const lesson of lessons.values()) {
+                console.log('准备创建词库:', {
+                    name: lesson.name,
+                    description: lesson.description,
+                    words: lesson.words,
                     mainCategory: type === 'chinese' ? '中文词库' : '英文词库',
                     subCategory: selectedGrade,
                     grade: selectedGrade
-                }
-            });
-
-            if (res.result && res.result.success) {
-                const { totalLessons, totalWords, feedback } = res.result.data;
-                this.setData({ feedback }); // 保存反馈信息
-
-                wx.showToast({
-                    title: `创建成功：${totalLessons}个词库，${totalWords}个词语`,
-                    icon: 'success',
-                    duration: 2000
                 });
-                
-                // 延迟返回上一页
-                setTimeout(() => {
-                    wx.navigateBack();
-                }, 2000);
-            } else {
-                const error = res.result?.error || '创建失败';
-                const feedback = res.result?.feedback || [];
-                this.setData({ feedback }); // 保存错误反馈信息
-                throw new Error(error);
+
+                const res = await wx.cloud.callFunction({
+                    name: 'addWordList',
+                    data: {
+                        name: lesson.name,
+                        description: lesson.description,
+                        words: lesson.words,
+                        mainCategory: type === 'chinese' ? '中文词库' : '英文词库',
+                        subCategory: selectedGrade,
+                        grade: selectedGrade
+                    }
+                });
+
+                console.log('创建词库结果:', res);
+
+                if (res.result && res.result.success) {
+                    console.log('词库创建成功:', {
+                        id: res.result.data.id,
+                        name: lesson.name,
+                        totalLists: res.result.data.totalLists
+                    });
+                    results.push(res.result);
+                } else {
+                    console.error('创建词库失败:', res.result?.error || '未知错误');
+                    throw new Error(res.result?.error || '创建词库失败');
+                }
             }
+
+            wx.showToast({
+                title: `创建成功：${lessons.size}个词库，${totalWords}个词语`,
+                icon: 'success',
+                duration: 2000
+            });
+            
+            // 延迟返回上一页
+            setTimeout(() => {
+                wx.navigateBack();
+            }, 2000);
+
         } catch (error) {
             console.error('创建词库失败:', error);
             wx.showToast({
