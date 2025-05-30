@@ -5,6 +5,11 @@
     <text>加载中...</text>
   </view>
 
+  <view wx:if="{{loadingAudio}}" class="audio-loading">
+    <text class="icon">🔊</text>
+    <text>音频加载中...</text>
+  </view>
+
   <block wx:else>
     <!-- 词库名称 -->
     <view class="wordlist-name">
@@ -18,16 +23,12 @@
     </view>
 
     <!-- 当前词语 -->
-    <view class="word-card">
-      <view class="word-text" wx:if="{{showAnswer}}">
-        {{currentWord.text}}
-      </view>
-      <view class="word-text placeholder" wx:else>
-        点击显示答案
-      </view>
-      <view class="word-pinyin" wx:if="{{showAnswer && settings.showPinyin && currentWord.pinyin}}">
-        {{currentWord.pinyin}}
-      </view>
+    <view class="word-display">
+      <block wx:if="{{showAnswer}}">
+        <text class="word">{{words[currentIndex]}}</text>
+        <text class="pinyin" wx:if="{{settings.showPinyin && currentWord.pinyin}}">{{currentWord.pinyin}}</text>
+      </block>
+      <text wx:else class="placeholder">请听写</text>
     </view>
 
     <!-- 控制按钮 -->
@@ -36,17 +37,29 @@
         class="control-btn" 
         bindtap="prevWord"
         disabled="{{currentIndex === 0}}"
-      >上一个</button>
+        hover-class="button-hover"
+      >
+        <text class="icon">←</text>
+        <text>上一个</text>
+      </button>
       <button 
         class="control-btn primary" 
         bindtap="playCurrentWord"
         loading="{{isPlaying}}"
-      >播放</button>
+        hover-class="button-hover"
+      >
+        <text class="icon">▶</text>
+        <text>播放</text>
+      </button>
       <button 
         class="control-btn" 
         bindtap="nextWord"
         disabled="{{currentIndex === words.length - 1}}"
-      >下一个</button>
+        hover-class="button-hover"
+      >
+        <text>下一个</text>
+        <text class="icon">→</text>
+      </button>
     </view>
 
     <!-- 答案控制 -->
@@ -54,7 +67,11 @@
       <button 
         class="answer-btn" 
         bindtap="toggleAnswer"
-      >{{showAnswer ? '隐藏答案' : '显示答案'}}</button>
+        hover-class="button-hover"
+      >
+        <text class="icon">{{showAnswer ? '👁️' : '👁️‍🗨️'}}</text>
+        <text>{{showAnswer ? '隐藏答案' : '显示答案'}}</text>
+      </button>
     </view>
 
     <!-- 设置面板 -->
@@ -68,6 +85,8 @@
           step="0.1" 
           value="{{settings.playSpeed}}"
           bindchange="changeSpeed"
+          activeColor="var(--primary-color)"
+          block-size="24"
         />
         <text class="setting-value">{{settings.playSpeed}}x</text>
       </view>
@@ -81,6 +100,8 @@
           step="1" 
           value="{{settings.repeatTimes}}"
           bindchange="changeRepeat"
+          activeColor="var(--primary-color)"
+          block-size="24"
         />
         <text class="setting-value">{{settings.repeatTimes}}次</text>
       </view>
@@ -90,6 +111,7 @@
         <switch 
           checked="{{settings.autoNext}}" 
           bindchange="toggleAutoNext"
+          color="var(--primary-color)"
         />
       </view>
 
@@ -98,6 +120,7 @@
         <switch 
           checked="{{settings.randomOrder}}" 
           bindchange="toggleRandomOrder"
+          color="var(--primary-color)"
         />
       </view>
 
@@ -106,11 +129,13 @@
         <switch 
           checked="{{settings.showPinyin}}" 
           bindchange="togglePinyin"
+          color="var(--primary-color)"
         />
       </view>
     </view>
 
-    <view style="padding: 40rpx;">
+    <!-- 底部信息 -->
+    <view class="footer-info">
       <text wx:if="{{lessonId}}">正在听写课文：{{lessonId}}</text>
       <text wx:if="{{listId}}">正在听写List：{{listId}}</text>
     </view>

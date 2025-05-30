@@ -1,4 +1,5 @@
 // pages/dictation/dictation.js
+const app = getApp()
 Page({
 
     /**
@@ -18,6 +19,7 @@ Page({
         autoNext: false,
         progress: 0,
         loading: true,
+        loadingAudio: false,
         settings: {
             playSpeed: 1,
             repeatTimes: 1,
@@ -27,7 +29,13 @@ Page({
             showPinyin: true
         },
         lessonId: '',
-        listId: ''
+        listId: '',
+        userInput: '',
+        isCorrect: null,
+        timeSpent: 0,
+        startTime: null,
+        completedWords: 0,
+        totalWords: 0
     },
 
     /**
@@ -44,6 +52,8 @@ Page({
         })
         // 加载云端进度
         this.loadProgress()
+        // 加载设置
+        this.loadSettings()
     },
 
     /**
@@ -71,7 +81,10 @@ Page({
      * 生命周期函数--监听页面卸载
      */
     onUnload() {
-
+        // 页面卸载时更新进度
+        if (this.data.startTime) {
+            this.updateProgress()
+        }
     },
 
     /**
@@ -144,10 +157,22 @@ Page({
                         words = this.shuffleArray([...words])
                     }
 
+                    // 处理拼音
+                    words = words.map(word => {
+                        if (typeof word === 'string') {
+                            return {
+                                word,
+                                pinyin: this.getPinyin(word)
+                            }
+                        }
+                        return word
+                    })
+
                     this.setData({
                         wordList,
                         words,
                         currentWord: words[this.data.currentIndex],
+                        totalWords: words.length,
                         loading: false
                     })
                 } else {
@@ -176,7 +201,7 @@ Page({
             currentRepeat: 0
         })
 
-        this.playWord()
+        this.startDictation()
     },
 
     // 播放词语
@@ -219,11 +244,20 @@ Page({
         })
     },
 
-    // 显示/隐藏答案
-    toggleAnswer() {
-        this.setData({
-            showAnswer: !this.data.showAnswer
-        })
+    // 显示答案
+    onShowAnswer() {
+        this.setData({ showAnswer: true });
+    },
+
+    // 切换到下一个词时，自动隐藏答案
+    goToNextWord() {
+        if (this.data.currentIndex < this.data.words.length - 1) {
+            this.setData({
+                currentIndex: this.data.currentIndex + 1,
+                showAnswer: false
+            });
+            // ...播放下一个词的音频等逻辑...
+        }
     },
 
     // 下一个词语
@@ -300,5 +334,118 @@ Page({
             [array[i], array[j]] = [array[j], array[i]]
         }
         return array
+    },
+
+    playAudio(word) {
+        const audioContext = wx.createInnerAudioContext();
+        audioContext.src = this.getAudioSrc(word);
+
+        this.setData({ loadingAudio: true });
+
+        audioContext.onCanplay(() => {
+            this.setData({ loadingAudio: false });
+            audioContext.play();
+        });
+
+        audioContext.onPlay(() => {
+            this.setData({ loadingAudio: false });
+        });
+
+        audioContext.onError((err) => {
+            this.setData({ loadingAudio: false });
+            console.error('音频播放失败', err);
+            wx.showToast({
+                title: '音频加载失败',
+                icon: 'none'
+            });
+        });
+    },
+
+    // 加载设置
+    loadSettings() {
+        const settings = wx.getStorageSync('dictationSettings') || this.data.settings
+        this.setData({ settings })
+    },
+
+    // 保存设置
+    saveSettings(settings) {
+        this.setData({ settings })
+        wx.setStorageSync('dictationSettings', settings)
+    },
+
+    // 获取拼音
+    getPinyin(word) {
+        // 这里可以调用拼音转换API或使用本地拼音库
+        // 暂时返回空字符串，后续可以接入拼音服务
+        return ''
+    },
+
+    startDictation() {
+        this.setData({
+            startTime: Date.now(),
+            isPlaying: true
+        })
+        this.playCurrentWord()
+    },
+
+    checkAnswer() {
+        if (!this.data.userInput.trim()) {
+            wx.showToast({
+                title: '请输入答案',
+                icon: 'none'
+            })
+            return
+        }
+
+        const isCorrect = this.data.userInput.trim() === this.data.currentWord.word
+        const completedWords = this.data.completedWords + 1
+
+        this.setData({
+            isCorrect,
+            showAnswer: true,
+            completedWords
+        })
+
+        // 延迟后进入下一个单词
+        setTimeout(() => {
+            this.nextWord()
+        }, this.data.settings.pauseTime * 1000)
+    },
+
+    completeDictation() {
+        const timeSpent = Math.floor((Date.now() - this.data.startTime) / 1000)
+        
+        // 更新进度
+        this.updateProgress(timeSpent)
+
+        wx.showModal({
+            title: '听写完成',
+            content: `用时: ${timeSpent}秒\n完成: ${this.data.completedWords}/${this.data.totalWords}个单词`,
+            showCancel: false,
+            success: () => {
+                wx.navigateBack()
+            }
+        })
+    },
+
+    updateProgress(timeSpent = 0) {
+        wx.cloud.callFunction({
+            name: 'updateDictationProgress',
+            data: {
+                wordListId: this.data.wordList._id,
+                wordListName: this.data.wordList.name,
+                totalWords: this.data.totalWords,
+                completedWords: this.data.completedWords,
+                timeSpent: timeSpent || Math.floor((Date.now() - this.data.startTime) / 1000)
+            }
+        }).catch(err => {
+            console.error('更新进度失败:', err)
+        })
+    },
+
+    onInput(e) {
+        this.setData({
+            userInput: e.detail.value
+        })
     }
 })

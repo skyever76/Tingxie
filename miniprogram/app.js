@@ -36,5 +36,11 @@ App({
         })
       }
     })
+  },
+
+  goDictation() {
+    wx.navigateTo({
+      url: '/pages/dictation/dictation'
+    });
   }
 }) 

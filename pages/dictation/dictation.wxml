@@ -8,25 +8,45 @@
   <block wx:elif="{{words.length > 0}}">
     <!-- 进度条 -->
     <view class="progress-bar">
-      <view class="progress" style="width: {{(currentIndex + 1) / words.length * 100}}%"></view>
-      <text class="progress-text">{{currentIndex + 1}}/{{words.length}}</text>
+      <progress percent="{{progress}}" stroke-width="3" color="#07c160"/>
+      <text class="progress-text">{{completedWords}}/{{totalWords}}</text>
     </view>
     <!-- 当前词条 -->
     <view class="word-card">
-      <text class="word-index">第{{currentIndex + 1}}题</text>
-      <button class="tts-btn" bindtap="handlePlay">🔊 播放</button>
-      <view class="next-area">
-        <button class="next-btn" bindtap="handleNext">下一个</button>
+      <view class="word-content">
+        <text class="word-text">{{currentWord.word}}</text>
+        <text class="word-phonetic" wx:if="{{currentWord.phonetic}}">[{{currentWord.phonetic}}]</text>
+      </view>
+
+      <view class="controls">
+        <button class="play-btn" bindtap="playCurrentWord">
+          <text class="iconfont icon-play"></text>
+        </button>
       </view>
     </view>
-    <!-- 自动下一个提示 -->
-    <view class="auto-next-tip" wx:if="{{autoNext}}">
-      <text>即将自动跳到下一题...</text>
+
+    <view class="input-area">
+      <input 
+        class="answer-input {{isCorrect === true ? 'correct' : isCorrect === false ? 'wrong' : ''}}"
+        value="{{userInput}}"
+        placeholder="请输入答案"
+        bindinput="onInput"
+        disabled="{{showAnswer}}"
+      />
+      <button 
+        class="check-btn"
+        bindtap="checkAnswer"
+        disabled="{{showAnswer}}"
+      >检查</button>
     </view>
-    <!-- 完成统计 -->
-    <view class="finish-panel" wx:if="{{isFinished}}">
-      <text>答题完成！共{{words.length}}题</text>
-      <button class="restart-btn" bindtap="handleRestart">再来一轮</button>
+
+    <view class="answer-area" wx:if="{{showAnswer}}">
+      <text class="answer-text">正确答案：{{currentWord.word}}</text>
+      <text class="answer-meaning" wx:if="{{currentWord.meaning}}">{{currentWord.meaning}}</text>
+    </view>
+
+    <view class="stats">
+      <text class="time">用时：{{timeSpent}}秒</text>
     </view>
   </block>
   <view wx:else class="empty-tip">

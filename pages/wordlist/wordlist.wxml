@@ -1,0 +1,53 @@
+<view class="container">
+  <!-- 类型切换 -->
+  <view class="type-switch">
+    <view 
+      class="type-item {{currentType === 'personal' ? 'active' : ''}}"
+      bindtap="switchType"
+      data-type="personal"
+    >个人词库</view>
+    <view 
+      class="type-item {{currentType === 'public' ? 'active' : ''}}"
+      bindtap="switchType"
+      data-type="public"
+    >公共词库</view>
+  </view>
+
+  <!-- 词库列表 -->
+  <view class="word-list">
+    <view class="word-item" wx:for="{{wordLists}}" wx:key="_id">
+      <view class="word-info">
+        <view class="word-name">{{item.name}}</view>
+        <view class="word-desc" wx:if="{{item.description}}">{{item.description}}</view>
+        <view class="word-meta">
+          <text class="word-count">{{item.words.length}}个单词</text>
+          <text class="word-time">{{item.createTime}}</text>
+        </view>
+      </view>
+      <view class="word-actions">
+        <button 
+          class="action-btn download-btn"
+          wx:if="{{currentType === 'public'}}"
+          bindtap="downloadWordList"
+          data-id="{{item._id}}"
+        >下载</button>
+        <button 
+          class="action-btn start-btn"
+          bindtap="startDictation"
+          data-id="{{item._id}}"
+        >开始</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-status">
+    <view wx:if="{{loading}}" class="loading">加载中...</view>
+    <view wx:elif="{{!hasMore}}" class="no-more">没有更多了</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && wordLists.length === 0}}">
+    <text>暂无词库</text>
+  </view>
+</view> 

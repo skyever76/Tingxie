@@ -1,0 +1,127 @@
+<view class="container">
+  <!-- 拍照区域 -->
+  <view class="camera-section">
+    <view class="camera-preview" wx:if="{{currentImages.length > 0}}">
+      <swiper class="image-swiper" indicator-dots="{{currentImages.length > 1}}">
+        <swiper-item wx:for="{{currentImages}}" wx:key="*this">
+          <image src="{{item}}" mode="aspectFit"></image>
+        </swiper-item>
+      </swiper>
+    </view>
+    <view class="camera-placeholder" wx:else>
+      <text class="placeholder-text">点击下方按钮拍照或选择图片</text>
+    </view>
+    <button 
+      class="camera-btn"
+      bindtap="chooseImage"
+      disabled="{{isRecognizing}}"
+    >
+      {{isRecognizing ? '识别中...' : '拍照/选择图片'}}
+    </button>
+  </view>
+
+  <!-- 功能按钮 -->
+  <view class="action-buttons">
+    <button class="action-btn" bindtap="showHistoryList">
+      <text class="btn-icon">📋</text>
+      <text>历史记录</text>
+    </button>
+    <button class="action-btn" bindtap="showTempWordLists">
+      <text class="btn-icon">📚</text>
+      <text>临时词库</text>
+    </button>
+  </view>
+
+  <!-- 预览弹窗 -->
+  <view class="preview-modal" wx:if="{{showPreview}}">
+    <view class="preview-mask" bindtap="cancelCreate"></view>
+    <view class="preview-content">
+      <view class="preview-header">
+        <text class="preview-title">识别结果</text>
+        <text class="preview-close" bindtap="cancelCreate">×</text>
+      </view>
+      <scroll-view class="preview-body" scroll-y>
+        <view class="word-list">
+          <view class="word-item" wx:for="{{previewWords}}" wx:key="index">
+            <view class="word-content">
+              <text class="word-text">{{item.word}}</text>
+              <text class="word-meaning" wx:if="{{item.meaning}}">{{item.meaning}}</text>
+            </view>
+            <view class="word-actions">
+              <view class="action-btn edit" bindtap="editWord" data-index="{{index}}">编辑</view>
+              <view class="action-btn delete" bindtap="deleteWord" data-index="{{index}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="preview-footer">
+        <button class="preview-cancel" bindtap="cancelCreate">取消</button>
+        <button class="preview-confirm" bindtap="confirmCreate">开始听写</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 历史记录弹窗 -->
+  <view class="preview-modal" wx:if="{{showHistory}}">
+    <view class="preview-mask" bindtap="hideHistory"></view>
+    <view class="preview-content">
+      <view class="preview-header">
+        <text class="preview-title">历史记录</text>
+        <text class="preview-close" bindtap="hideHistory">×</text>
+      </view>
+      <scroll-view class="preview-body" scroll-y>
+        <view class="history-list">
+          <view class="history-item" wx:for="{{historyList}}" wx:key="id">
+            <image class="history-image" src="{{item.imagePath}}" mode="aspectFill"></image>
+            <view class="history-info">
+              <text class="history-time">{{item.createTime}}</text>
+              <text class="history-count">{{item.words.length}}个单词</text>
+            </view>
+            <view class="history-actions">
+              <view class="action-btn use" bindtap="useHistory" data-words="{{item.words}}">使用</view>
+              <view class="action-btn delete" bindtap="deleteHistory" data-id="{{item.id}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 临时词库弹窗 -->
+  <view class="preview-modal" wx:if="{{showWordList}}">
+    <view class="preview-mask" bindtap="hideTempWordLists"></view>
+    <view class="preview-content">
+      <view class="preview-header">
+        <text class="preview-title">临时词库</text>
+        <text class="preview-close" bindtap="hideTempWordLists">×</text>
+      </view>
+      <scroll-view class="preview-body" scroll-y>
+        <view class="wordlist-list">
+          <view class="wordlist-item" wx:for="{{tempWordLists}}" wx:key="name">
+            <view class="wordlist-info">
+              <text class="wordlist-name">{{item.name}}</text>
+              <text class="wordlist-count">{{item.words.length}}个单词</text>
+            </view>
+            <view class="wordlist-actions">
+              <view class="action-btn use" bindtap="useTempWordList" data-name="{{item.name}}">使用</view>
+              <view class="action-btn delete" bindtap="deleteTempWordList" data-index="{{index}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="guide-section">
+    <view class="guide-title">使用说明</view>
+    <view class="guide-content">
+      <text class="guide-item">1. 点击"拍照/选择图片"按钮</text>
+      <text class="guide-item">2. 拍摄或选择包含单词的图片</text>
+      <text class="guide-item">3. 等待文字识别完成</text>
+      <text class="guide-item">4. 检查并编辑识别结果</text>
+      <text class="guide-item">5. 点击"开始听写"进行练习</text>
+      <text class="guide-item">6. 可以查看历史记录和临时词库</text>
+    </view>
+  </view>
+</view> 

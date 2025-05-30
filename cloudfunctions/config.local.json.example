@@ -1,0 +1,15 @@
+{
+  "envId": "your-env-id",
+  "functionName": "function-name",
+  "timeout": 20,
+  "memorySize": 128,
+  "triggers": [],
+  "variables": {
+    "KEY": "value"
+  },
+  "runtime": "Nodejs12.16",
+  "region": "ap-shanghai",
+  "description": "云函数描述",
+  "author": "开发者名称",
+  "version": "1.0.0"
+} 

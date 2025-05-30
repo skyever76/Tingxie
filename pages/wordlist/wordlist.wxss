@@ -1,0 +1,113 @@
+.container {
+  padding: 20rpx;
+  min-height: 100vh;
+  background: #f8f8f8;
+}
+
+.type-switch {
+  display: flex;
+  background: #fff;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.type-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 32rpx;
+  color: #666;
+  position: relative;
+}
+
+.type-item.active {
+  color: #07c160;
+  font-weight: bold;
+}
+
+.type-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 4rpx;
+  background: #07c160;
+  border-radius: 2rpx;
+}
+
+.word-list {
+  margin-bottom: 20rpx;
+}
+
+.word-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+}
+
+.word-info {
+  margin-bottom: 20rpx;
+}
+
+.word-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.word-desc {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.word-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.word-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20rpx;
+}
+
+.action-btn {
+  min-width: 160rpx;
+  font-size: 28rpx;
+  padding: 10rpx 30rpx;
+  border-radius: 8rpx;
+  margin: 0;
+}
+
+.download-btn {
+  background: #1989fa;
+  color: #fff;
+}
+
+.start-btn {
+  background: #07c160;
+  color: #fff;
+}
+
+.loading-status {
+  text-align: center;
+  padding: 20rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 100rpx 0;
+  color: #999;
+  font-size: 32rpx;
+} 

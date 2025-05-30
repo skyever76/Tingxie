@@ -1,0 +1,397 @@
+.container {
+  padding: 20rpx;
+  min-height: 100vh;
+  background: #f8f8f8;
+}
+
+/* 拍照区域样式 */
+.camera-section {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.camera-preview {
+  width: 100%;
+  height: 400rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+
+.camera-preview image {
+  width: 100%;
+  height: 100%;
+}
+
+.image-swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.camera-placeholder {
+  width: 100%;
+  height: 400rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+.placeholder-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.camera-btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #1989fa;
+  color: #fff;
+  font-size: 28rpx;
+  border-radius: 8rpx;
+}
+
+.camera-btn[disabled] {
+  background: #ccc;
+}
+
+/* 功能按钮样式 */
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.action-buttons .action-btn {
+  flex: 1;
+  height: 100rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 0;
+}
+
+.btn-icon {
+  font-size: 40rpx;
+  margin-bottom: 6rpx;
+}
+
+/* 处理步骤提示样式 */
+.processing-tips {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.processing-content {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.processing-icon {
+  font-size: 40rpx;
+}
+
+.processing-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 预览弹窗样式 */
+.preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.preview-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.preview-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-header {
+  padding: 30rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.preview-close {
+  font-size: 40rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.preview-body {
+  flex: 1;
+  padding: 30rpx;
+  max-height: calc(80vh - 200rpx);
+}
+
+/* 单词列表样式 */
+.word-list {
+  background: #f8f8f8;
+  border-radius: 8rpx;
+  padding: 20rpx;
+}
+
+.word-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: #fff;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.word-item:last-child {
+  margin-bottom: 0;
+}
+
+.word-content {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.word-header {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.word-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.word-confidence {
+  font-size: 22rpx;
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+}
+
+.word-original {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 6rpx;
+  display: block;
+}
+
+.word-meaning {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.word-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-btn {
+  font-size: 24rpx;
+  padding: 10rpx 20rpx;
+  border-radius: 6rpx;
+}
+
+.action-btn.edit {
+  color: #1989fa;
+  background: rgba(25, 137, 250, 0.1);
+}
+
+.action-btn.delete {
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+}
+
+.action-btn.use {
+  color: #52c41a;
+  background: rgba(82, 196, 26, 0.1);
+}
+
+.preview-footer {
+  padding: 20rpx 30rpx;
+  border-top: 2rpx solid #f0f0f0;
+  display: flex;
+  gap: 20rpx;
+}
+
+.preview-cancel {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 28rpx;
+  border-radius: 8rpx;
+}
+
+.preview-confirm {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #1989fa;
+  color: #fff;
+  font-size: 28rpx;
+  border-radius: 8rpx;
+}
+
+/* 历史记录样式 */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+.history-image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+}
+
+.history-info {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.history-time {
+  font-size: 26rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.history-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.history-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+/* 临时词库样式 */
+.wordlist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.wordlist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+.wordlist-info {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.wordlist-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.wordlist-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.wordlist-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+/* 使用说明样式 */
+.guide-section {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.guide-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.guide-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.guide-item {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+} 

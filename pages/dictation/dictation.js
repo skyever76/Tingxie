@@ -2,144 +2,141 @@
 const app = getApp()
 Page({
   data: {
-    words: [],
+    wordList: null,
+    currentWord: null,
     currentIndex: 0,
-    isFinished: false,
-    showSkeleton: true,
-    errorMsg: '',
-    autoNext: false,
-    switchMode: 'manual',
-    autoInterval: 3,
-    currentWord: {},
-    textId: ''
+    isPlaying: false,
+    showAnswer: false,
+    userInput: '',
+    isCorrect: null,
+    progress: 0,
+    timeSpent: 0,
+    startTime: null,
+    completedWords: 0,
+    totalWords: 0
   },
-  onLoad(options) {
-    this.setData({ textId: options.textId || '' })
-    this.loadSettings()
-    this.loadWords()
-    this.startTime = Date.now()
-    this.autoTimer = null
-  },
-  onUnload() {
-    if (this.autoTimer) clearTimeout(this.autoTimer)
-  },
-  // 加载设置
-  loadSettings() {
-    try {
-      const settings = wx.getStorageSync('dictationSettings')
-      this.setData({
-        autoNext: settings && settings.autoNext,
-        switchMode: settings && settings.switchMode || 'manual',
-        autoInterval: settings && settings.autoInterval || 3
-      })
-    } catch {}
-  },
-  // 加载词条
-  async loadWords() {
-    this.setData({ showSkeleton: true, errorMsg: '' })
-    try {
-      const db = wx.cloud.database()
-      let res = await db.collection('chinese_texts').doc(this.data.textId).get()
-      if (!res.data) {
-        res = await db.collection('english_lists').doc(this.data.textId).get()
-      }
-      if (!res.data) throw new Error('未找到词条')
-      const words = res.data.words || []
-      this.setData({
-        words,
-        currentIndex: 0,
-        isFinished: false,
-        showSkeleton: false,
-        currentWord: words[0] || {}
-      })
-      this.startAutoNext()
-    } catch (error) {
-      console.error('加载词条失败', error)
-      this.setData({ errorMsg: '加载失败，请下拉重试', showSkeleton: false })
+  onLoad: function(options) {
+    if (options.id) {
+      this.loadWordList(options.id)
     }
   },
-  // TTS播放
-  handlePlay() {
-    if (this.getVibrationSetting()) wx.vibrateShort()
-    const word = this.data.currentWord
-    if (!word || !word.text) return
-    wx.showLoading({ title: '播放中' })
+  loadWordList: function(id) {
+    wx.showLoading({
+      title: '加载中...'
+    })
+
     wx.cloud.callFunction({
-      name: 'tts',
-      data: { text: word.text },
-      success: () => { wx.hideLoading() },
-      fail: () => { wx.hideLoading(); wx.showToast({ title: '播放失败', icon: 'none' }) }
+      name: 'getWordList',
+      data: { id }
+    }).then(res => {
+      if (res.result && res.result.data) {
+        const wordList = res.result.data
+        this.setData({
+          wordList,
+          totalWords: wordList.words.length,
+          currentWord: wordList.words[0]
+        })
+      }
+    }).catch(err => {
+      console.error('加载词表失败:', err)
+      wx.showToast({
+        title: '加载失败',
+        icon: 'error'
+      })
+    }).finally(() => {
+      wx.hideLoading()
     })
   },
-  // 下一个
-  handleNext() {
-    if (this.getVibrationSetting()) wx.vibrateShort()
-    this.nextWord()
-  },
-  // 自动/手动切换
-  startAutoNext() {
-    if (this.autoTimer) clearTimeout(this.autoTimer)
-    if (this.data.switchMode === 'auto' && !this.data.isFinished) {
-      this.autoTimer = setTimeout(() => {
-        this.nextWord()
-      }, this.data.autoInterval * 1000)
-    }
-  },
-  // 下一题
-  nextWord() {
-    const { currentIndex, words } = this.data
-    if (currentIndex < words.length - 1) {
-      this.setData({
-        currentIndex: currentIndex + 1,
-        currentWord: words[currentIndex + 1]
-      })
-      this.startAutoNext()
-    } else {
-      this.setData({ isFinished: true })
-      if (this.autoTimer) clearTimeout(this.autoTimer)
-      this.saveHistory()
-    }
-  },
-  // 再来一轮
-  handleRestart() {
-    if (this.getVibrationSetting()) wx.vibrateShort()
+  startDictation: function() {
     this.setData({
-      currentIndex: 0,
-      isFinished: false,
-      currentWord: this.data.words[0] || {}
+      startTime: Date.now(),
+      isPlaying: true
     })
-    this.startTime = Date.now()
-    this.startAutoNext()
+    this.playCurrentWord()
   },
-  // 写入学习记录
-  async saveHistory() {
-    try {
-      const db = wx.cloud.database()
-      await db.collection('learning_history').add({
-        data: {
-          textId: this.data.textId,
-          words: this.data.words.length,
-          duration: Math.floor((Date.now() - this.startTime) / 1000),
-          date: new Date(),
-          _openid: app.globalData.openid
-        }
+  playCurrentWord: function() {
+    if (!this.data.currentWord) return
+
+    const innerAudioContext = wx.createInnerAudioContext()
+    innerAudioContext.src = this.data.currentWord.audioUrl
+    innerAudioContext.play()
+  },
+  checkAnswer: function() {
+    if (!this.data.userInput.trim()) {
+      wx.showToast({
+        title: '请输入答案',
+        icon: 'none'
       })
-    } catch (error) {
-      console.error('保存学习记录失败', error)
+      return
+    }
+
+    const isCorrect = this.data.userInput.trim() === this.data.currentWord.word
+    const completedWords = this.data.completedWords + 1
+
+    this.setData({
+      isCorrect,
+      showAnswer: true,
+      completedWords
+    })
+
+    // 延迟后进入下一个单词
+    setTimeout(() => {
+      this.nextWord()
+    }, 2000)
+  },
+  nextWord: function() {
+    const nextIndex = this.data.currentIndex + 1
+    if (nextIndex < this.data.wordList.words.length) {
+      this.setData({
+        currentIndex: nextIndex,
+        currentWord: this.data.wordList.words[nextIndex],
+        userInput: '',
+        isCorrect: null,
+        showAnswer: false,
+        progress: (nextIndex / this.data.wordList.words.length) * 100
+      })
+    } else {
+      this.completeDictation()
     }
   },
-  // 获取设置中的振动开关
-  getVibrationSetting() {
-    try {
-      const settings = wx.getStorageSync('dictationSettings')
-      return settings && settings.vibration !== undefined ? settings.vibration : true
-    } catch {
-      return true
-    }
+  completeDictation: function() {
+    const timeSpent = Math.floor((Date.now() - this.data.startTime) / 1000)
+    
+    // 更新进度
+    this.updateProgress(timeSpent)
+
+    wx.showModal({
+      title: '听写完成',
+      content: `用时: ${timeSpent}秒\n完成: ${this.data.completedWords}/${this.data.totalWords}个单词`,
+      showCancel: false,
+      success: () => {
+        wx.navigateBack()
+      }
+    })
   },
-  // 下拉刷新
-  onPullDownRefresh() {
-    this.loadWords()
-    wx.stopPullDownRefresh()
+  updateProgress: function(timeSpent = 0) {
+    wx.cloud.callFunction({
+      name: 'updateDictationProgress',
+      data: {
+        wordListId: this.data.wordList._id,
+        wordListName: this.data.wordList.name,
+        totalWords: this.data.totalWords,
+        completedWords: this.data.completedWords,
+        timeSpent: timeSpent || Math.floor((Date.now() - this.data.startTime) / 1000)
+      }
+    }).catch(err => {
+      console.error('更新进度失败:', err)
+    })
+  },
+  onInput: function(e) {
+    this.setData({
+      userInput: e.detail.value
+    })
+  },
+  onUnload: function() {
+    // 页面卸载时更新进度
+    if (this.data.startTime) {
+      this.updateProgress()
+    }
   }
 }) 

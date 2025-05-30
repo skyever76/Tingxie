@@ -1,0 +1,85 @@
+/**
+ * 本地开发配置文件模板
+ * 复制此文件为 config.local.js 并填入实际配置
+ */
+
+module.exports = {
+  // 云环境 ID
+  envId: 'your-env-id',
+  
+  // 云函数配置
+  cloudFunctions: {
+    // 获取词库
+    getWordList: {
+      timeout: 20,
+      memorySize: 128,
+      // 其他特定配置
+    },
+    // 添加词库
+    addWordList: {
+      timeout: 20,
+      memorySize: 128,
+    },
+    // 删除词库
+    deleteWordList: {
+      timeout: 20,
+      memorySize: 128,
+    },
+    // 更新词库
+    updateWordList: {
+      timeout: 20,
+      memorySize: 128,
+    },
+    // 获取听写进度
+    getDictationProgress: {
+      timeout: 20,
+      memorySize: 128,
+    },
+    // 更新听写进度
+    updateDictationProgress: {
+      timeout: 20,
+      memorySize: 128,
+    },
+    // 获取分类
+    getCategories: {
+      timeout: 20,
+      memorySize: 128,
+    },
+    // 获取分类文本
+    getTextsByCategory: {
+      timeout: 20,
+      memorySize: 128,
+    }
+  },
+  
+  // 开发环境配置
+  debug: true,
+  
+  // 数据库配置
+  database: {
+    // 数据库名称
+    name: 'tingxie',
+    // 集合名称
+    collections: {
+      wordLists: 'word_lists',
+      categories: 'categories',
+      texts: 'texts',
+      progress: 'progress'
+    }
+  },
+  
+  // 存储配置
+  storage: {
+    // 存储目录
+    directories: {
+      audio: 'audio/',
+      images: 'images/'
+    }
+  },
+  
+  // 其他配置
+  app: {
+    name: '亚当听写',
+    version: '1.0.0'
+  }
+}; 

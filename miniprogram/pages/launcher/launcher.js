@@ -65,23 +65,55 @@ Page({
     },
 
     goDictation() {
+        console.log('听写按钮被点击');
         wx.navigateTo({
-            url: '/pages/dictation/chinese/chinese'
+            url: '/pages/dictation/dictation',
+            success(res) {
+                console.log('导航成功:', res);
+            },
+            fail(err) {
+                console.error('导航失败:', err);
+                wx.showToast({ title: '跳转失败', icon: 'none' });
+            }
         });
     },
     goQuiz() {
+        console.log('刷题按钮被点击');
         wx.navigateTo({
-            url: '/pages/quiz/quiz_home/quiz_home'
+            url: '/pages/quiz/quiz_home/quiz_home',
+            success(res) {
+                console.log('导航成功:', res);
+            },
+            fail(err) {
+                console.error('导航失败:', err);
+                wx.showToast({ title: '跳转失败', icon: 'none' });
+            }
         });
     },
     goOther() {
+        console.log('其它按钮被点击');
         wx.navigateTo({
-            url: '/pages/other/other_home/other_home'
+            url: '/pages/other/other_home/other_home',
+            success(res) {
+                console.log('导航成功:', res);
+            },
+            fail(err) {
+                console.error('导航失败:', err);
+                wx.showToast({ title: '跳转失败', icon: 'none' });
+            }
         });
     },
     goAdmin() {
+        console.log('管理后台按钮被点击');
         wx.navigateTo({
-            url: '/pages/admin/admin_home/admin_home'
+            url: '/pages/admin/admin_home/admin_home',
+            success(res) {
+                console.log('导航成功:', res);
+            },
+            fail(err) {
+                console.error('导航失败:', err);
+                wx.showToast({ title: '跳转失败', icon: 'none' });
+            }
         });
     }
 })

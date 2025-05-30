@@ -1,0 +1,158 @@
+<view class="container">
+  <!-- 基本信息 -->
+  <view class="section basic-info">
+    <view class="section-title">基本信息</view>
+    <view class="form-item">
+      <text class="label">词库名称</text>
+      <input 
+        class="input"
+        value="{{wordList.name}}"
+        placeholder="请输入词库名称"
+        data-field="name"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">词库描述</text>
+      <textarea 
+        class="textarea"
+        value="{{wordList.description}}"
+        placeholder="请输入词库描述"
+        data-field="description"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">一级分类</text>
+      <input 
+        class="input"
+        value="{{wordList.category}}"
+        placeholder="请输入一级分类"
+        data-field="category"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">二级分类</text>
+      <input 
+        class="input"
+        value="{{wordList.subCategory}}"
+        placeholder="请输入二级分类"
+        data-field="subCategory"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">是否公开</text>
+      <switch 
+        checked="{{wordList.isPublic}}"
+        bindchange="onPublicChange"
+      />
+    </view>
+  </view>
+
+  <!-- 文件上传 -->
+  <view class="section upload-section">
+    <view class="section-title">导入词库</view>
+    <view class="upload-tips">
+      支持Excel(.xlsx/.xls)和TXT文件格式
+      <text class="format-tips">Excel格式：第一列为单词，第二列为释义</text>
+      <text class="format-tips">TXT格式：每行一个单词，可用冒号分隔中英文释义</text>
+    </view>
+    <view class="upload-actions">
+      <button 
+        class="upload-btn"
+        bindtap="chooseFile"
+        disabled="{{isUploading}}"
+      >
+        {{isUploading ? '上传中...' : '选择文件'}}
+      </button>
+      <button 
+        class="template-btn"
+        bindtap="downloadTemplate"
+      >下载模板</button>
+    </view>
+    <view class="progress-bar" wx:if="{{isUploading}}">
+      <view class="progress-inner" style="width: {{uploadProgress}}%"></view>
+    </view>
+  </view>
+
+  <!-- 章节列表 -->
+  <view class="section chapter-list">
+    <view class="section-title">章节列表</view>
+    <view class="chapter-item" wx:for="{{wordList.sections}}" wx:key="index">
+      <view class="chapter-header">
+        <text class="chapter-title">{{item.title}}</text>
+        <text class="chapter-count">{{item.words.length}}个单词</text>
+        <view 
+          class="delete-btn"
+          bindtap="deleteSection"
+          data-index="{{index}}"
+        >删除</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加新章节 -->
+  <view class="section add-chapter">
+    <view class="section-title">添加新章节</view>
+    <view class="form-item">
+      <text class="label">章节标题</text>
+      <input 
+        class="input"
+        value="{{currentSection.title}}"
+        placeholder="请输入章节标题"
+        data-field="title"
+        bindinput="onInput"
+      />
+    </view>
+    <view class="form-item">
+      <text class="label">章节内容</text>
+      <textarea 
+        class="textarea content"
+        value="{{currentSection.content}}"
+        placeholder="请输入章节内容，每行一个单词，可以用冒号分隔中英文释义"
+        data-field="content"
+        bindinput="onInput"
+      />
+    </view>
+    <button class="add-btn" bindtap="addSection">添加章节</button>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="footer">
+    <button class="save-btn" bindtap="saveWordList">保存词库</button>
+  </view>
+
+  <!-- 预览弹窗 -->
+  <view class="preview-modal" wx:if="{{showPreview}}">
+    <view class="preview-mask" bindtap="cancelImport"></view>
+    <view class="preview-content">
+      <view class="preview-header">
+        <text class="preview-title">导入预览</text>
+        <text class="preview-close" bindtap="cancelImport">×</text>
+      </view>
+      <scroll-view class="preview-body" scroll-y>
+        <view class="preview-item" wx:for="{{previewData}}" wx:key="fileName">
+          <view class="preview-file-info">
+            <text class="preview-file-name">{{item.fileName}}</text>
+            <text class="preview-file-type">{{item.type === 'excel' ? 'Excel文件' : 'TXT文件'}}</text>
+          </view>
+          <view class="preview-word-list" wx:if="{{item.type === 'txt'}}">
+            <view class="preview-word-item" wx:for="{{item.words}}" wx:for-item="word" wx:key="word">
+              <text class="preview-word">{{word.word}}</text>
+              <text class="preview-meaning" wx:if="{{word.meaning}}">{{word.meaning}}</text>
+            </view>
+          </view>
+          <view class="preview-word-count" wx:if="{{item.type === 'txt'}}">
+            共{{item.wordCount}}个单词
+          </view>
+        </view>
+      </scroll-view>
+      <view class="preview-footer">
+        <button class="preview-cancel" bindtap="cancelImport">取消</button>
+        <button class="preview-confirm" bindtap="confirmImport">确认导入</button>
+      </view>
+    </view>
+  </view>
+</view> 

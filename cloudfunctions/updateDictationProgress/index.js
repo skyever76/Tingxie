@@ -6,54 +6,60 @@ cloud.init({
 })
 
 const db = cloud.database()
+const _ = db.command
+const $ = db.command.aggregate
 
 // 云函数入口函数
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const { 
-    wordListId, 
+    wordListId,
     wordListName,
     totalWords,
     completedWords,
-    accuracy,
-    timeSpent,
-    mistakes
+    timeSpent
   } = event
 
-  if (!wordListId) {
-    return {
-      success: false,
-      error: '缺少词表ID'
-    }
-  }
-
   try {
-    // 创建听写记录
-    const result = await db.collection('dictation_records').add({
+    // 创建新记录
+    await db.collection('progress').add({
       data: {
         _openid: wxContext.OPENID,
         wordListId,
         wordListName,
         totalWords,
         completedWords,
-        accuracy,
         timeSpent,
-        mistakes,
-        completedAt: db.serverDate()
+        createTime: db.serverDate()
       }
     })
 
+    // 获取该用户的所有记录
+    const records = await db.collection('progress')
+      .where({
+        _openid: wxContext.OPENID
+      })
+      .orderBy('createTime', 'desc')
+      .get()
+
+    // 如果记录超过5条，删除多余的记录
+    if (records.data.length > 5) {
+      const deleteIds = records.data.slice(5).map(record => record._id)
+      await db.collection('progress').where({
+        _id: _.in(deleteIds)
+      }).remove()
+    }
+
     return {
       success: true,
-      data: {
-        id: result._id
-      }
+      message: '进度更新成功'
     }
   } catch (error) {
-    console.error('更新听写进度失败', error)
+    console.error('更新进度失败:', error)
     return {
       success: false,
-      error: error.message || '更新听写进度失败'
+      message: '更新进度失败',
+      error: error
     }
   }
 } 
